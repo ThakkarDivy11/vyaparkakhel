@@ -109,11 +109,12 @@ export default function PlayWithFriendsPage() {
 
   return (
     <PageBackground bgImage="/backgrounds/friends_bg.jpg">
-      {/* ── Hexagon Back Button ── */}
+      {/* ── Back Button ── */}
+      {/* Hexagon Back Button (Desktop/Tablet) */}
       <button
         onClick={() => router.push('/')}
         aria-label="Back"
-        className="absolute top-4 left-4 sm:top-6 sm:left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group"
+        className="hidden sm:block absolute top-6 left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group"
       >
         <svg width="108" height="36" viewBox="0 0 108 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
           <defs>
@@ -139,8 +140,17 @@ export default function PlayWithFriendsPage() {
         </div>
       </button>
 
+      {/* Circular Back Button (Mobile) */}
+      <button
+        onClick={() => router.push('/')}
+        aria-label="Back"
+        className="block sm:hidden absolute top-4 left-4 w-9 h-9 rounded-full bg-gradient-to-b from-[#0e2140] to-[#050c18] border-2 border-[#d4a84b] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] active:scale-95 transition-all cursor-pointer z-30 group"
+      >
+        <ArrowLeft size={18} className="text-[#ffd54f] stroke-[3px] group-hover:text-white transition-colors" />
+      </button>
+
       {/* ── Centered Top Banner ── */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center w-full max-w-[280px] sm:max-w-[360px] pointer-events-none">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center w-full max-w-[200px] sm:max-w-[360px] pointer-events-none">
         <img
           src="/play_with_friends_banner.png"
           alt="Play with Friends"

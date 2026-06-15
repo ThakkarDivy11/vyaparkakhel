@@ -45,12 +45,12 @@ export default function CreateRoomPage() {
 
   return (
     <PageBackground bgImage="/backgrounds/friends_bg.jpg">
-      {/* Hexagon Back Button */}
+      {/* Hexagon Back Button (Desktop/Tablet) */}
       <button
         onClick={() => router.back()}
         aria-label="Back"
         disabled={creating}
-        className="absolute top-4 left-4 sm:top-6 sm:left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group disabled:opacity-40 disabled:pointer-events-none"
+        className="hidden sm:block absolute top-6 left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group disabled:opacity-40 disabled:pointer-events-none"
       >
         {/* Hexagon Background SVG */}
         <svg width="108" height="36" viewBox="0 0 108 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
@@ -95,8 +95,18 @@ export default function CreateRoomPage() {
         </div>
       </button>
 
+      {/* Circular Back Button (Mobile) */}
+      <button
+        onClick={() => router.back()}
+        aria-label="Back"
+        disabled={creating}
+        className="block sm:hidden absolute top-4 left-4 w-9 h-9 rounded-full bg-gradient-to-b from-[#0e2140] to-[#050c18] border-2 border-[#d4a84b] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] active:scale-95 transition-all cursor-pointer z-30 group disabled:opacity-40 disabled:pointer-events-none"
+      >
+        <ArrowLeft size={18} className="text-[#ffd54f] stroke-[3px] group-hover:text-white transition-colors" />
+      </button>
+
       {/* Centered Top Header Plaque */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center w-full max-w-[280px] sm:max-w-[360px] pointer-events-none select-none">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center w-full max-w-[200px] sm:max-w-[360px] pointer-events-none select-none">
         <img
           src="/create_room_header.png"
           alt="Create a Room"

@@ -112,9 +112,8 @@ export default function FlatBoard({ gameState, centerSlot, myPlayerSeat, onHopCo
     // LayoutGroup enables layoutId-based shared element transitions for pawns
     <LayoutGroup>
       <div
-        className="mx-auto"
+        className="mx-auto game-board-container"
         style={{
-          '--board-size': 'min(calc(100vw - 450px), calc(100vh - 110px), 700px)',
           width: 'var(--board-size)',
           height: 'var(--board-size)',
           aspectRatio: '1/1',

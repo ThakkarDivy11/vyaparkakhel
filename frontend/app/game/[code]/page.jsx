@@ -45,6 +45,7 @@ export default function GameRoom() {
   const [showTrade, setShowTrade] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showMobileLog, setShowMobileLog] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [error, setError] = useState('');
   const [bgImage, setBgImage] = useState('/backgrounds/bg_vintage.jpg');
@@ -384,7 +385,7 @@ export default function GameRoom() {
 
 
       {/* Layout: three-column full screen view */}
-      <div className="fixed inset-0 flex flex-row items-stretch pt-2 pb-2 px-4 gap-3 overflow-hidden z-10">
+      <div className="fixed inset-0 flex flex-col lg:flex-row items-stretch pt-2 pb-2 px-4 gap-3 overflow-hidden z-10">
         {error && (
           <div className="fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm z-50 shadow-(--shadow-md)">
             {error}
@@ -393,7 +394,7 @@ export default function GameRoom() {
         )}
 
         {/* Left Column: Logo + Unified Gold Card Sidebar + Bottom Quick Settings */}
-        <div className="w-48 shrink-0 flex flex-col gap-2.5 min-h-0">
+        <div className="hidden lg:flex w-48 shrink-0 flex-col gap-2.5 min-h-0">
           {/* Logo image: 3D Shield Banner style */}
           <div className="flex flex-col items-center justify-center select-none text-center shrink-0 py-1">
             <img 
@@ -466,7 +467,85 @@ export default function GameRoom() {
         </div>
 
         {/* Center Column: Board & Action Controls */}
-        <div className="flex-1 h-full flex flex-col items-center justify-center min-h-0 gap-1.5">
+        <div className="flex-1 h-full flex flex-col items-center justify-between lg:justify-center min-h-0 gap-1.5 py-1 lg:py-0">
+          
+          {/* Mobile Top Header: Player Avatars & Room Code */}
+          <div className="w-full flex flex-col gap-1.5 lg:hidden shrink-0">
+            <div className="flex items-center justify-between px-1">
+              {/* Settings / Menu Button */}
+              <button 
+                onClick={() => setShowMenu(true)} 
+                className="gold-card p-1.5 text-[#cbb992] flex items-center justify-center rounded-lg cursor-pointer"
+              >
+                <Settings size={18} />
+              </button>
+              
+              {/* Room Code */}
+              <div className="gold-card px-3 py-1 flex items-center gap-2">
+                <span className="text-[10px] text-[#cbb992] font-black uppercase">Code:</span>
+                <span className="text-white font-mono font-bold text-xs tracking-wider select-all">{code}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(code);
+                    toast.success('Room code copied!');
+                  }}
+                  className="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-[#cbb992] text-[8px] font-bold rounded uppercase tracking-wider transition-colors border border-slate-700 cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
+
+              {/* Chat / Log Toggle Button */}
+              <button 
+                onClick={() => setShowMobileLog(true)} 
+                className="gold-card p-1.5 text-[#cbb992] flex items-center justify-center rounded-lg cursor-pointer"
+              >
+                <MessageSquare size={18} />
+              </button>
+            </div>
+
+            {/* Players list horizontal scrollable row */}
+            <div className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none justify-start px-1">
+              {gameState.players.map(p => {
+                const isCurrentTurn = gameState.currentTurnSeat === p.seat;
+                return (
+                  <div 
+                    key={p.seat} 
+                    className={clsx(
+                      "flex items-center gap-1.5 px-2.5 py-1 rounded-xl shrink-0 border transition-all duration-200",
+                      isCurrentTurn 
+                        ? "bg-[#cbb992]/20 border-[#ffd54f] shadow-[0_0_8px_rgba(255,213,79,0.3)]" 
+                        : "bg-black/60 border-slate-800"
+                    )}
+                  >
+                    <div className="relative shrink-0">
+                      <Avatar
+                        src={p.avatarUrl}
+                        name={p.displayName}
+                        size="xs"
+                        className={clsx(
+                          "rounded-full w-6 h-6 object-cover",
+                          isCurrentTurn ? "border border-[#ffd54f]" : "border border-slate-700"
+                        )}
+                      />
+                      <div className="absolute -top-1.5 -right-1.5">
+                        <PawnIcon color={TOKEN_COLORS[p.seat % TOKEN_COLORS.length]} className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col leading-none">
+                      <span className={clsx("text-[9px] font-bold truncate max-w-[60px]", p.isBankrupt ? "text-red-500 line-through" : "text-white")}>
+                        {p.displayName}
+                      </span>
+                      <span className="text-[9px] font-mono font-extrabold text-[#cbb992] mt-0.5">
+                        ₹{p.balance.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="flex-1 w-full flex items-center justify-center min-h-0">
             <Board
               gameState={gameState}
@@ -478,6 +557,21 @@ export default function GameRoom() {
                   freeParkingPool={gameState.freeParkingPool}
                 />
               }
+            />
+          </div>
+
+          {/* Mobile Action Buttons Bar */}
+          <div className="w-full px-2 block lg:hidden shrink-0">
+            <ActionBar
+              gameState={gameState}
+              myPlayer={myPlayer}
+              onAction={(type, extra = {}) => {
+                if (isPassAndPlay && myPlayer) extra.seat = myPlayer.seat;
+                emitAction(type, extra);
+              }}
+              onOpenMenu={() => setShowMenu(true)}
+              onOpenManage={() => setShowManage(true)}
+              onOpenTrade={() => setShowTrade(true)}
             />
           </div>
 
@@ -560,7 +654,7 @@ export default function GameRoom() {
         </div>
 
         {/* Right Column: Multiplayer info + Players list + Activity log */}
-        <div className="w-56 shrink-0 flex flex-col gap-2.5 min-h-0">
+        <div className="hidden lg:flex w-56 shrink-0 flex-col gap-2.5 min-h-0">
           {/* Online Multiplayer info */}
           <div className="gold-card p-2.5 flex flex-col gap-1 w-full shrink-0">
             <div className="flex justify-between items-center text-[9px] font-black uppercase text-[#cbb992] border-b border-slate-800 pb-1 mb-0.5">
@@ -700,6 +794,27 @@ export default function GameRoom() {
       />
 
       <CardPopup card={cardPopup} onDismiss={dismissCard} />
+
+      {/* Mobile Chat & Log Modal */}
+      {showMobileLog && (
+        <Modal 
+          open={showMobileLog} 
+          onClose={() => setShowMobileLog(false)} 
+          title="Game Activity & Chat"
+          size="md"
+        >
+          <div className="h-[55vh] flex flex-col">
+            <LogTail
+              log={gameState.log}
+              players={gameState.players}
+              localChats={localChats}
+              chatText={chatText}
+              setChatText={setChatText}
+              onSendChat={handleSendChat}
+            />
+          </div>
+        </Modal>
+      )}
 
       {/* Guard by gameId so stale state from a prior game never shows here */}
       {gameState.status === 'finished' && game && gameState.gameId === game.gameId && (

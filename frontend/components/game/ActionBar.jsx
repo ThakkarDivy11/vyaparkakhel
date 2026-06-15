@@ -64,7 +64,7 @@ export default function ActionBar({
         </div>
       )}
 
-      <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex flex-row lg:flex-col gap-1.5 w-full overflow-x-auto lg:overflow-visible py-1 lg:py-0 scrollbar-none">
         <BarButton label="Menu" onClick={onOpenMenu} variant="blue" icon={Landmark} />
         <BarButton label="Build" onClick={onOpenManage} disabled={!canBuild} variant="green" icon={Dice5} />
         <BarButton label="Sell" onClick={onOpenManage} disabled={!canSell} variant="teal" icon={Coins} />
@@ -80,7 +80,7 @@ export default function ActionBar({
             bg-portage-600 hover:bg-portage-500 text-white
             shadow-[0_3px_0_0_var(--color-portage-800)] hover:shadow-[0_2px_0_0_var(--color-portage-800)]
             active:shadow-[0_1px_0_0_var(--color-portage-800)] active:translate-y-0.75
-            px-3 py-1.5 rounded-lg transition-[background-color,box-shadow,transform] duration-150 ease-out"
+            px-3 py-1.5 rounded-lg transition-[background-color,box-shadow,transform] duration-150 ease-out shrink-0"
         >
           <Check size={14} strokeWidth={2.5} />
           End Turn
@@ -105,8 +105,8 @@ function BarButton({ label, onClick, variant = 'green', disabled, icon: Icon }) 
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        'glossy-btn w-full select-none inline-flex items-center gap-2 justify-start',
-        'py-1 px-2 text-xs rounded-lg transition-all duration-150 active:scale-[0.97]',
+        'glossy-btn shrink-0 w-24 lg:w-full select-none inline-flex items-center gap-1.5 justify-center lg:justify-start',
+        'py-1.5 px-2 text-[10.5px] lg:text-xs rounded-lg transition-all duration-150 active:scale-[0.97]',
         'disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100',
         colorClasses[variant] || colorClasses.green
       )}

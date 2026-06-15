@@ -119,9 +119,8 @@ export default function ThreeDBoard({ gameState, centerSlot, myPlayerSeat, onHop
 
   return (
     <div
-      className="mx-auto select-none"
+      className="mx-auto select-none game-board-container"
       style={{
-        '--board-size': 'min(calc(100vw - 450px), calc(100vh - 110px), 700px)',
         width: 'var(--board-size)',
         height: 'var(--board-size)',
         aspectRatio: '1/1',

@@ -69,57 +69,66 @@ export default function JoinRoomPage() {
 
   return (
     <PageBackground bgImage="/backgrounds/friends_bg.jpg">
-      {/* Hexagon Back Button */}
-        <button
-          onClick={() => router.back()}
-          aria-label="Back"
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group"
-        >
-          {/* Hexagon Background SVG */}
-          <svg width="108" height="36" viewBox="0 0 108 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
-            <defs>
-              <linearGradient id="backBgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#0e2140" />
-                <stop offset="100%" stopColor="#050c18" />
-              </linearGradient>
-              <linearGradient id="backGoldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#a87c24" />
-                <stop offset="50%" stopColor="#ffd54f" />
-                <stop offset="100%" stopColor="#a87c24" />
-              </linearGradient>
-            </defs>
-            
-            {/* Outer Hexagon with Gold stroke */}
-            <path 
-              d="M 12 1 L 96 1 L 107 18 L 96 35 L 12 35 L 1 18 Z" 
-              fill="url(#backBgGrad)" 
-              stroke="url(#backGoldGrad)" 
-              strokeWidth="2"
-              className="group-hover:stroke-[#fff5c0] transition-colors duration-150"
-            />
-            
-            {/* Inner Hexagon with thin gold stroke */}
-            <path 
-              d="M 14 3.5 L 94 3.5 L 103.5 18 L 94 32.5 L 14 32.5 L 4.5 18 Z" 
-              stroke="#d4a84b" 
-              strokeWidth="0.75" 
-              opacity="0.6"
-              className="group-hover:opacity-85 transition-opacity duration-150"
-            />
-          </svg>
+      {/* Hexagon Back Button (Desktop/Tablet) */}
+      <button
+        onClick={() => router.back()}
+        aria-label="Back"
+        className="hidden sm:block absolute top-6 left-6 w-[108px] h-[36px] transition-all duration-150 ease-out hover:scale-[1.03] active:scale-[0.97] active:translate-y-[1px] cursor-pointer z-30 group"
+      >
+        {/* Hexagon Background SVG */}
+        <svg width="108" height="36" viewBox="0 0 108 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
+          <defs>
+            <linearGradient id="backBgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#0e2140" />
+              <stop offset="100%" stopColor="#050c18" />
+            </linearGradient>
+            <linearGradient id="backGoldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#a87c24" />
+              <stop offset="50%" stopColor="#ffd54f" />
+              <stop offset="100%" stopColor="#a87c24" />
+            </linearGradient>
+          </defs>
+          
+          {/* Outer Hexagon with Gold stroke */}
+          <path 
+            d="M 12 1 L 96 1 L 107 18 L 96 35 L 12 35 L 1 18 Z" 
+            fill="url(#backBgGrad)" 
+            stroke="url(#backGoldGrad)" 
+            strokeWidth="2"
+            className="group-hover:stroke-[#fff5c0] transition-colors duration-150"
+          />
+          
+          {/* Inner Hexagon with thin gold stroke */}
+          <path 
+            d="M 14 3.5 L 94 3.5 L 103.5 18 L 94 32.5 L 14 32.5 L 4.5 18 Z" 
+            stroke="#d4a84b" 
+            strokeWidth="0.75" 
+            opacity="0.6"
+            className="group-hover:opacity-85 transition-opacity duration-150"
+          />
+        </svg>
 
-          {/* Button Content */}
-          <div className="relative z-10 flex items-center justify-center w-full h-full gap-2 px-3">
-            <ArrowLeft size={16} className="text-[#ffd54f] stroke-[3px] shrink-0 group-hover:text-[#fff5c0] transition-colors" />
-            <div className="h-4 w-[1px] bg-[#d4a84b]/30 shrink-0" />
-            <span className="text-[#eae1cd] font-cinzel text-[11px] font-black tracking-widest leading-none select-none group-hover:text-white transition-colors">
-              BACK
-            </span>
-          </div>
-        </button>
+        {/* Button Content */}
+        <div className="relative z-10 flex items-center justify-center w-full h-full gap-2 px-3">
+          <ArrowLeft size={16} className="text-[#ffd54f] stroke-[3px] shrink-0 group-hover:text-[#fff5c0] transition-colors" />
+          <div className="h-4 w-[1px] bg-[#d4a84b]/30 shrink-0" />
+          <span className="text-[#eae1cd] font-cinzel text-[11px] font-black tracking-widest leading-none select-none group-hover:text-white transition-colors">
+            BACK
+          </span>
+        </div>
+      </button>
+
+      {/* Circular Back Button (Mobile) */}
+      <button
+        onClick={() => router.back()}
+        aria-label="Back"
+        className="block sm:hidden absolute top-4 left-4 w-9 h-9 rounded-full bg-gradient-to-b from-[#0e2140] to-[#050c18] border-2 border-[#d4a84b] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] active:scale-95 transition-all cursor-pointer z-30 group"
+      >
+        <ArrowLeft size={18} className="text-[#ffd54f] stroke-[3px] group-hover:text-white transition-colors" />
+      </button>
 
       {/* Centered Top Header Plaque */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center w-full max-w-[280px] sm:max-w-[360px] pointer-events-none select-none">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center w-full max-w-[200px] sm:max-w-[360px] pointer-events-none select-none">
         <img
           src="/join_room_header_transparent.png"
           alt="Join a Room"

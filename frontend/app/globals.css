@@ -2049,3 +2049,14 @@
     height: 22px !important;
   }
 }
+
+/* Game Board Container Size adjustments */
+.game-board-container {
+  --board-size: min(calc(100vw - 450px), calc(100vh - 110px), 700px);
+}
+
+@media (max-width: 1024px) {
+  .game-board-container {
+    --board-size: min(calc(100vw - 24px), calc(100vh - 240px), 480px) !important;
+  }
+}

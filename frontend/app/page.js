@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, SignInButton, useUser } from '@clerk/nextjs';
+import { useAuth, SignInButton, useUser, SignOutButton } from '@clerk/nextjs';
 import {
   Users, Cpu, Globe, Smartphone, Trophy, BookOpen,
   User, Play, Edit2, LogIn, ChevronRight, Award,
@@ -638,6 +638,8 @@ export default function Home() {
     let cancelled = false;
     (async () => {
       setProfileLoading(true);
+      setError('');
+      console.log("Fetching profile from API_URL:", API_URL);
       try {
         const token = await getToken();
         const res = await fetch(`${API_URL}/users/me`, {
@@ -650,9 +652,17 @@ export default function Home() {
             setDisplayNameInput(body.data.user?.displayName ?? '');
             setAvatarUrlInput(body.data.user?.avatarUrl ?? '');
           }
+        } else {
+          console.error("Profile fetch failed with status:", res.status);
+          const errBody = await res.json().catch(() => ({}));
+          console.error("Profile fetch error body:", errBody);
+          if (!cancelled) {
+            setError(errBody.message || `Server returned status ${res.status}`);
+          }
         }
       } catch (e) {
-        if (!cancelled) setError(e.message);
+        console.error("Profile fetch network error:", e);
+        if (!cancelled) setError(e.message || "Network error");
       } finally {
         if (!cancelled) setProfileLoading(false);
       }
@@ -757,10 +767,43 @@ export default function Home() {
   }
 
   // ─── Sign-in gate (Redesigned with the uploaded Incredible India artwork) ─
-  if (!isLoaded || (isSignedIn && (profileLoading || !profile))) {
+  if (!isLoaded || (isSignedIn && profileLoading)) {
     return (
       <PageBackground>
         <LoadingScreen message="Loading…" />
+      </PageBackground>
+    );
+  }
+
+  if (isSignedIn && !profile) {
+    return (
+      <PageBackground>
+        <div className="min-h-screen flex flex-col items-center justify-center font-display text-white p-6 bg-black/60 backdrop-blur-md">
+          <div className="max-w-md w-full text-center flex flex-col items-center gap-6 p-8 rounded-2xl border border-cafe-royale-700/20 bg-linear-to-b from-[#1c140c] to-[#0f0b06] shadow-2xl animate-float">
+            <span className="text-4xl">⚠️</span>
+            <h2 className="text-2xl font-black tracking-wider text-cafe-royale-300">BACKEND CONNECTION ERROR</h2>
+            <p className="text-sm text-white/80 leading-relaxed">
+              We could not connect to the backend server. Please verify your environment variables and ensure the backend is live.
+            </p>
+            <div className="w-full text-left bg-black/40 p-4 rounded-xl border border-white/5 font-mono text-[10px] text-white/60 space-y-1.5 break-all">
+              <div><span className="text-cafe-royale-400 font-bold">API URL:</span> {API_URL || 'Not Set'}</div>
+              {error && <div><span className="text-red-400 font-bold">Error:</span> {error}</div>}
+            </div>
+            <div className="flex gap-4 w-full">
+              <button 
+                onClick={() => window.location.reload()}
+                className="flex-1 py-3 bg-gradient-to-r from-cafe-royale-600 to-cafe-royale-400 text-black font-black text-xs tracking-wider rounded-xl shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+              >
+                RETRY
+              </button>
+              <SignOutButton>
+                <button className="flex-1 py-3 border border-cafe-royale-700/40 text-cafe-royale-300 font-extrabold text-xs tracking-wider rounded-xl bg-black/40 hover:bg-cafe-royale-600/10 active:scale-95 transition-all cursor-pointer">
+                  LOGOUT
+                </button>
+              </SignOutButton>
+            </div>
+          </div>
+        </div>
       </PageBackground>
     );
   }

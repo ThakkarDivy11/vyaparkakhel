@@ -4,6 +4,10 @@ const config = require("../../config/config");
 
 const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
 
+redis.on("error", (err) => {
+  console.error("Redis Connection Error:", err.message);
+});
+
 // simple lock helper using set NX + TTL
 async function acquireLock(key, ttl = 5000) {
   const id = `${process.pid}-${Date.now()}-${Math.random()}`;

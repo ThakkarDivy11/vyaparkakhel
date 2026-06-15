@@ -26,7 +26,7 @@ module.exports = {
   },
   development: {
     connection: {
-      port: process.env.DEV_PORT || 3000,
+      port: process.env.PORT || process.env.DEV_PORT || 3000,
     },
     database: {
       mongodb: buildMongoUri("dev"),
@@ -42,7 +42,7 @@ module.exports = {
   },
   staging: {
     connection: {
-      port: process.env.STAGING_PORT || 5002,
+      port: process.env.PORT || process.env.STAGING_PORT || 5002,
     },
     database: {
       mongodb: buildMongoUri("staging"),
@@ -58,7 +58,7 @@ module.exports = {
   },
   production: {
     connection: {
-      port: process.env.PRODUCTION_PORT || 5003,
+      port: process.env.PORT || process.env.PRODUCTION_PORT || 5003,
     },
     database: {
       mongodb: buildMongoUri(""), // production -> "vyaparkhel" (no suffix)

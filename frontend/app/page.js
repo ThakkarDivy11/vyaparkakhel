@@ -1463,7 +1463,7 @@ export default function Home() {
         }
       `}</style>
 
-      <div className="dashboard-root" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <div className="dashboard-root">
 
         {/* ═══ TOP ROW: Currency Bar ═══════════════════════════════════════ */}
         <div className="dash-topbar">
@@ -1471,17 +1471,7 @@ export default function Home() {
           <img
             src="/logo_banner.png"
             alt="Vyapar Khel"
-            style={{
-              height: '200px',
-              width: '200px',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.5))',
-              position: 'absolute',
-              left: '50px',
-              top: '130%',
-              transform: 'translateY(-50%)',
-              zIndex: 15,
-            }}
+            className="dash-topbar-logo"
           />
           {/* Currencies */}
           <div className="dash-currencies-wrap">
@@ -1521,7 +1511,7 @@ export default function Home() {
         </div>
 
         {/* ═══ MAIN BODY ROW ════════════════════════════════════════════════ */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <div className="dash-main-container">
 
           {/* ─── LEFT SIDEBAR ──────────────────────────────────────────── */}
           <aside className="dash-sidebar">
@@ -1609,7 +1599,7 @@ export default function Home() {
             <div className="dash-particle" style={{ left: '30%', top: '25%', animationDelay: '0.4s' }} />
 
             {activeTab === 'play' && (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '12px', overflow: 'auto', padding: '8px 150px 8px 0' }}>
+              <div className="dash-center-content">
 
                 {/* ─── DASHBOARD HERO LOGO ───────────────────────────── */}
                 <div className="dash-hero-logo" style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '25px', zIndex: 10 }}>

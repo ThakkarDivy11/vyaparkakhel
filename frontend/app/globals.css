@@ -1715,3 +1715,137 @@
 .no-vignette {
   background-image: none !important;
 }
+
+/* ═══ RESPONSIVE DASHBOARD LAYOUTS (Screens <= 992px & <= 768px) ═══ */
+
+/* Topbar logo class */
+.dash-topbar-logo {
+  height: 200px;
+  width: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.5));
+  position: absolute;
+  left: 50px;
+  top: 130%;
+  transform: translateY(-50%);
+  z-index: 15;
+}
+
+/* Main Container class */
+.dash-main-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Center Content class */
+.dash-center-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  overflow: auto;
+  padding: 8px 150px 8px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .dashboard-root {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto !important;
+  }
+  .dash-topbar {
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+    height: auto;
+    align-items: center;
+  }
+  .dash-topbar-logo {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    height: 90px;
+    width: 130px;
+    margin-bottom: 8px;
+  }
+  .dash-currencies-wrap {
+    position: relative;
+    left: auto;
+    transform: none;
+    margin: 8px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .dash-topbar-actions {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    justify-content: center;
+  }
+  .dash-center-content {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dash-main-container {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .dash-sidebar {
+    width: 100%;
+    min-width: auto;
+    padding: 16px;
+    border-right: none;
+    border-bottom: 2.5px solid #d4a84b;
+    background: rgba(6, 18, 42, 0.85);
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+  .dash-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    width: 100%;
+  }
+  .dash-nav::before {
+    inset: 2px;
+  }
+  .dash-nav-item {
+    flex: 1 1 calc(33.3% - 6px);
+    justify-content: center;
+    padding: 8px 6px;
+    font-size: 9px;
+  }
+  .dash-player-card {
+    width: 100%;
+  }
+  .dash-modes-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 0 16px;
+  }
+  .dash-hero-logo {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+  }
+  .dash-hero-logo img {
+    max-h: 150px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-nav-item {
+    flex: 1 1 calc(50% - 6px);
+  }
+  .dash-modes-row {
+    grid-template-columns: 1fr !important;
+    max-width: 280px;
+  }
+}

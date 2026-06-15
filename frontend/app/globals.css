@@ -2013,9 +2013,9 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     width: 100% !important;
-    max-width: 340px !important;
+    max-width: 360px !important;
     height: 60vh !important; /* Scale to fill exactly 60% of viewport height */
-    max-height: 380px !important;
+    max-height: 420px !important;
     margin: auto !important;
     padding: 0 !important;
     overflow: hidden !important;
@@ -2033,8 +2033,8 @@
 @media (max-width: 480px) {
   .dash-modes-row {
     grid-template-columns: repeat(2, 1fr) !important; /* Keep 2-column grid to fit height */
-    max-height: 350px !important;
-    max-width: 325px !important;
+    max-height: 400px !important;
+    max-width: 350px !important;
     gap: 12px !important;
   }
   

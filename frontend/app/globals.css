@@ -2011,11 +2011,11 @@
   /* Constrain the grid height dynamically so it fits 100% in viewport */
   .dash-modes-row {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
-    max-width: 310px !important;
+    max-width: 340px !important;
     height: 60vh !important; /* Scale to fill exactly 60% of viewport height */
-    max-height: 290px !important;
+    max-height: 380px !important;
     margin: auto !important;
     padding: 0 !important;
     overflow: hidden !important;
@@ -2033,9 +2033,9 @@
 @media (max-width: 480px) {
   .dash-modes-row {
     grid-template-columns: repeat(2, 1fr) !important; /* Keep 2-column grid to fit height */
-    max-height: 260px !important;
-    max-width: 280px !important;
-    gap: 8px !important;
+    max-height: 350px !important;
+    max-width: 325px !important;
+    gap: 12px !important;
   }
   
   /* Hide text labels on extra small screens for more breathing room */

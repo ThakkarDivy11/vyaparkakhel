@@ -1718,6 +1718,11 @@
 
 /* ═══ RESPONSIVE DASHBOARD LAYOUTS (Screens <= 992px & <= 768px) ═══ */
 
+/* Default hidden state for mobile avatar in topbar */
+.mobile-profile-btn {
+  display: none !important;
+}
+
 /* Topbar logo class */
 .dash-topbar-logo {
   height: 200px;
@@ -1793,59 +1798,140 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-root {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto !important;
+  }
+  
   .dash-main-container {
     flex-direction: column;
     overflow: visible;
   }
+  
+  /* Show avatar next to settings in topbar on phone */
+  .mobile-profile-btn {
+    display: flex !important;
+  }
+  
+  /* Convert sidebar to a sticky bottom navigation bar */
   .dash-sidebar {
-    width: 100%;
-    min-width: auto;
-    padding: 16px;
-    border-right: none;
-    border-bottom: 2.5px solid #d4a84b;
-    background: rgba(6, 18, 42, 0.85);
-    position: relative;
-    top: auto;
-    left: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    height: 70px !important;
+    padding: 0 10px !important;
+    background: rgba(6, 18, 42, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-top: 2.5px solid #d4a84b !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 100 !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6) !important;
   }
+  
+  /* Hide the large player card inside bottom nav */
+  .dash-sidebar .dash-player-card {
+    display: none !important;
+  }
+  
+  /* Nav layout inside bottom nav */
   .dash-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px;
-    width: 100%;
+    flex-direction: row !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    overflow: visible !important;
   }
-  .dash-nav::before {
-    inset: 2px;
+  
+  .dash-nav::before,
+  .dash-nav::after {
+    display: none !important;
   }
+  
+  /* Style each tab item in bottom nav */
   .dash-nav-item {
-    flex: 1 1 calc(33.3% - 6px);
-    justify-content: center;
-    padding: 8px 6px;
-    font-size: 9px;
+    flex: 1 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    height: 100% !important;
+    padding: 4px 0 !important;
+    font-size: 7.5px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    border: none !important;
   }
-  .dash-player-card {
-    width: 100%;
+  
+  .dash-nav-item.active {
+    color: #ffd54f !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
+  
+  .dash-nav-icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  /* Reorder tabs on phone: Home, Leaderboard, Achievements, History, Profile */
+  .dash-nav button:nth-child(1) { order: 1 !important; } /* Home */
+  .dash-nav button:nth-child(4) { order: 2 !important; } /* Leaderboard */
+  .dash-nav button:nth-child(5) { order: 3 !important; } /* Achievements */
+  .dash-nav button:nth-child(6) { order: 4 !important; } /* History */
+  .dash-nav button:nth-child(2) { order: 5 !important; } /* Profile */
+  .dash-nav button:nth-child(3) { display: none !important; } /* Hide Store on phone */
+
+  /* Pad main center content so it doesn't clip behind bottom nav */
+  .dash-center-content {
+    padding: 12px 16px 85px 16px !important;
+    width: 100% !important;
+  }
+  
   .dash-modes-row {
     grid-template-columns: repeat(2, 1fr) !important;
-    padding: 0 16px;
+    gap: 12px !important;
+    padding: 0 10px !important;
   }
+  
   .dash-hero-logo {
-    margin-top: 15px !important;
+    margin-top: 10px !important;
     margin-bottom: 15px !important;
   }
+  
   .dash-hero-logo img {
-    max-h: 150px !important;
+    max-height: 120px !important;
   }
 }
 
 @media (max-width: 480px) {
-  .dash-nav-item {
-    flex: 1 1 calc(50% - 6px);
-  }
   .dash-modes-row {
     grid-template-columns: 1fr !important;
-    max-width: 280px;
+    max-width: 260px !important;
+  }
+  
+  /* Hide text labels on extra small screens for more breathing room */
+  .dash-nav-item {
+    font-size: 0px !important;
+    gap: 0px !important;
+  }
+  
+  .dash-nav-icon {
+    width: 24px !important;
+    height: 24px !important;
   }
 }

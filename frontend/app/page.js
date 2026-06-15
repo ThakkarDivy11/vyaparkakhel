@@ -648,9 +648,14 @@ export default function Home() {
         if (res.ok) {
           const body = await res.json();
           if (!cancelled) {
-            setProfile(body.data.user);
-            setDisplayNameInput(body.data.user?.displayName ?? '');
-            setAvatarUrlInput(body.data.user?.avatarUrl ?? '');
+            if (body && body.data) {
+              setProfile(body.data.user);
+              setDisplayNameInput(body.data.user?.displayName ?? '');
+              setAvatarUrlInput(body.data.user?.avatarUrl ?? '');
+            } else {
+              console.error("Malformed response from server, missing data field:", body);
+              setError("Server response missing 'data' field. Please make sure NEXT_PUBLIC_API_URL ends with '/api/v1'");
+            }
           }
         } else {
           console.error("Profile fetch failed with status:", res.status);

@@ -1,0 +1,779 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { COLOR_CLASSES, TOKEN_COLORS } from '@/lib/boardLayout';
+import {
+  ArrowLeft, Lock, ParkingCircle, AlertTriangle,
+  Train, Lightbulb, Droplets, HelpCircle, Gift, Receipt,
+} from 'lucide-react';
+
+// Premium Custom Handcuffs Icon Component
+function Handcuffs({ size = 24, className }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="8" cy="16" r="4" />
+      <circle cx="16" cy="8" r="4" />
+      <path d="M10.5 13.5 C 11.5 11.5, 12.5 11.5, 13.5 12.5" />
+      <path d="M11.5 12.5 C 12.5 10.5, 13.5 10.5, 14.5 11.5" />
+      <rect x="10" y="14" width="2" height="2" rx="0.5" fill="currentColor" />
+      <rect x="12" y="8" width="2" height="2" rx="0.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+// Premium Gold Corner Filigree Ornaments for card-faces
+function GoldCorners() {
+  return (
+    <>
+      {/* Top-Left */}
+      <svg className="absolute top-1 left-1 w-2.5 h-2.5 text-[#dfb76c] opacity-80 pointer-events-none z-10" viewBox="0 0 10 10" fill="none">
+        <path d="M1 9V1H9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="2" cy="2" r="0.6" fill="currentColor" />
+      </svg>
+      {/* Top-Right */}
+      <svg className="absolute top-1 right-1 w-2.5 h-2.5 text-[#dfb76c] opacity-80 pointer-events-none z-10" viewBox="0 0 10 10" fill="none">
+        <path d="M9 9V1H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="8" cy="2" r="0.6" fill="currentColor" />
+      </svg>
+      {/* Bottom-Left */}
+      <svg className="absolute bottom-1 left-1 w-2.5 h-2.5 text-[#dfb76c] opacity-80 pointer-events-none z-10" viewBox="0 0 10 10" fill="none">
+        <path d="M1 1V9H9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="2" cy="8" r="0.6" fill="currentColor" />
+      </svg>
+      {/* Bottom-Right */}
+      <svg className="absolute bottom-1 right-1 w-2.5 h-2.5 text-[#dfb76c] opacity-80 pointer-events-none z-10" viewBox="0 0 10 10" fill="none">
+        <path d="M9 1V9H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="8" cy="8" r="0.6" fill="currentColor" />
+      </svg>
+    </>
+  );
+}
+
+// Highly detailed premium 3D Treasure Chest SVG Component
+function TreasureChest({ size = 32, className }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.5))' }}
+    >
+      {/* Lid Top Curved Face */}
+      <path d="M12 28 C12 18, 52 18, 52 28 Z" fill="#1b4f72" stroke="#dfb76c" strokeWidth="1.5" />
+      
+      {/* Chest Lid Base */}
+      <path d="M12 28 L52 28 L46 36 L18 36 Z" fill="#2471a3" stroke="#dfb76c" strokeWidth="1.5" />
+      
+      {/* Chest Body Front Face */}
+      <path d="M12 28 L52 28 L52 48 C52 51, 48 54, 44 54 L20 54 C16 54, 12 51, 12 48 Z" fill="#1f618d" stroke="#dfb76c" strokeWidth="1.5" />
+      
+      {/* Gold Keyhole Plate (Lock) */}
+      <path d="M28 32 H36 V40 H28 Z" fill="#f1c40f" stroke="#d68910" strokeWidth="1" />
+      <circle cx="32" cy="35" r="1.5" fill="#1a1a1a" />
+      <path d="M32 36.5 L32 39" stroke="#1a1a1a" strokeWidth="1" strokeLinecap="round" />
+      
+      {/* Gold Bands (Left and Right Vertical Bands) */}
+      <path d="M18 20 V54" stroke="#f1c40f" strokeWidth="2.5" opacity="0.95" />
+      <path d="M46 20 V54" stroke="#f1c40f" strokeWidth="2.5" opacity="0.95" />
+      
+      {/* Gold Trim Bottom */}
+      <path d="M12 48 C12 51, 16 54, 20 54 H44 C48 54, 52 51, 52 48" stroke="#f1c40f" strokeWidth="2" fill="none" />
+      
+      {/* Golden Handle on top */}
+      <path d="M26 18 C26 14, 38 14, 38 18" stroke="#f1c40f" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Highly detailed premium 3D Question Mark SVG Component for Chance
+function QuestionMark3D({ size = 32, className }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.5))' }}
+    >
+      {/* 3D Extrusion Shadow for the Question Mark */}
+      <text
+        x="34"
+        y="46"
+        fontFamily="Georgia, serif"
+        fontSize="44"
+        fontWeight="900"
+        fill="#b33600"
+        textAnchor="middle"
+      >
+        ?
+      </text>
+      <text
+        x="33"
+        y="45"
+        fontFamily="Georgia, serif"
+        fontSize="44"
+        fontWeight="900"
+        fill="#d35400"
+        textAnchor="middle"
+      >
+        ?
+      </text>
+      {/* Front Face of the Question Mark */}
+      <text
+        x="32"
+        y="44"
+        fontFamily="Georgia, serif"
+        fontSize="44"
+        fontWeight="900"
+        fill="#f1c40f"
+        stroke="#dfb76c"
+        strokeWidth="1"
+        textAnchor="middle"
+      >
+        ?
+      </text>
+    </svg>
+  );
+}
+
+// Highly detailed premium 3D Prison padlock SVG Component for Jail
+function PrisonLock({ size = 20, className }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.65))' }}
+    >
+      {/* Heavy Shackle arch */}
+      <path d="M16 28 C16 12, 48 12, 48 28" stroke="#7f8c8d" strokeWidth="5.5" strokeLinecap="round" />
+      <path d="M16 28 C16 12, 48 12, 48 28" stroke="#bdc3c7" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Heavy Brass Lock body */}
+      <rect x="10" y="24" width="44" height="34" rx="4" fill="#a07c1e" stroke="#dfb76c" strokeWidth="2" />
+      {/* Lock plate border detail */}
+      <rect x="14" y="28" width="36" height="26" rx="2" stroke="#806214" strokeWidth="1.2" />
+      {/* Keyhole */}
+      <circle cx="32" cy="38" r="3" fill="#111" />
+      <path d="M32 40 L32 48" stroke="#111" strokeWidth="2.2" strokeLinecap="round" />
+      {/* Rivets in corners */}
+      <circle cx="15" cy="29" r="1" fill="#f1c40f" />
+      <circle cx="49" cy="29" r="1" fill="#f1c40f" />
+      <circle cx="15" cy="53" r="1" fill="#f1c40f" />
+      <circle cx="49" cy="53" r="1" fill="#f1c40f" />
+    </svg>
+  );
+}
+
+// Helpers to calculate 3D shadow projections and board sides based on position
+function get3DClass(pos) {
+  if (pos === 0) return 'space-3d-corner-br';
+  if (pos === 10) return 'space-3d-corner-bl';
+  if (pos === 20) return 'space-3d-corner-tl';
+  if (pos === 30) return 'space-3d-corner-tr';
+  if (pos >= 1 && pos <= 9) return 'space-3d-bottom';
+  if (pos >= 11 && pos <= 19) return 'space-3d-left';
+  if (pos >= 21 && pos <= 29) return 'space-3d-top';
+  if (pos >= 31 && pos <= 39) return 'space-3d-right';
+  return 'space-3d-bottom';
+}
+
+function getSpaceOrientation(pos) {
+  if (pos >= 0 && pos <= 10) return 'bottom';
+  if (pos >= 11 && pos <= 20) return 'left';
+  if (pos >= 21 && pos <= 30) return 'top';
+  return 'right';
+}
+
+function getBorderOverride(orientation) {
+  if (orientation === 'bottom') return { borderTop: 'none' };
+  if (orientation === 'top') return { borderBottom: 'none' };
+  if (orientation === 'left') return { borderRight: 'none' };
+  if (orientation === 'right') return { borderLeft: 'none' };
+  return {};
+}
+
+const EXTRUSION_COLORS = {
+  brown: ['#8b5a2b', '#7a4f25', '#69441f', '#58391a'],
+  light_blue: ['#5ac8fa', '#4faee3', '#4395cc', '#387cb5'],
+  pink: ['#ec4899', '#db3a88', '#ca2c77', '#b91c66'],
+  orange: ['#f97316', '#e4620f', '#cf5208', '#ba4200'],
+  red: ['#dc2626', '#c21d1d', '#a81414', '#8f0b0b'],
+  yellow: ['#eab308', '#d69e02', '#c18a00', '#ad7600'],
+  green: ['#16a34a', '#128a3c', '#0f712e', '#0c5820'],
+  dark_blue: ['#1d4ed8', '#1a43be', '#1638a4', '#132e8a'],
+};
+
+const SPECIAL_EXTRUSION_COLORS = {
+  railway: ['#2c2c2c', '#222222', '#181818', '#0e0e0e'],
+  chance: ['#e67e22', '#d35400', '#b33600', '#8f2b00'],
+  community_chest: ['#2980b9', '#2471a3', '#1f618d', '#1a5276'],
+  go_to_jail: ['#c62828', '#b71c1c', '#9e1b1b', '#801414'],
+  free_parking: ['#2e7d32', '#226326', '#1b5e20', '#104513'],
+  jail: ['#eaeaea', '#dcdcdc', '#cccccc', '#b8b8b8'],
+  go: ['#dfb76c', '#c59b27', '#a07c1e', '#806214'],
+};
+
+function getSpace3DStyle(space) {
+  let shades = null;
+  if (space.type === 'property') {
+    shades = EXTRUSION_COLORS[space.color];
+  } else {
+    shades = SPECIAL_EXTRUSION_COLORS[space.type];
+  }
+
+  // Fallback to default parchment shades if no custom shades specified
+  if (!shades) {
+    shades = ['#e6dbb8', '#d9cca2', '#ccbe8c', '#bfb077'];
+  }
+
+  const pos = space.pos;
+  if (pos >= 1 && pos <= 9) {
+    // Bottom side: shadow projects UP (negative Y)
+    return {
+      boxShadow: `
+        0 -1px 0 ${shades[0]},
+        0 -2px 0 ${shades[1]},
+        0 -3px 0 ${shades[2]},
+        0 -4px 0 ${shades[3]},
+        0 -8px 14px rgba(0, 0, 0, 0.55),
+        0 -16px 28px rgba(0, 0, 0, 0.35)
+      `
+    };
+  }
+  if (pos >= 11 && pos <= 19) {
+    // Left side: shadow projects RIGHT (positive X)
+    return {
+      boxShadow: `
+        1px 0 0 ${shades[0]},
+        2px 0 0 ${shades[1]},
+        3px 0 0 ${shades[2]},
+        4px 0 0 ${shades[3]},
+        8px 0 14px rgba(0, 0, 0, 0.55),
+        16px 0 28px rgba(0, 0, 0, 0.35)
+      `
+    };
+  }
+  if (pos >= 21 && pos <= 29) {
+    // Top side: shadow projects DOWN (positive Y)
+    return {
+      boxShadow: `
+        0 1px 0 ${shades[0]},
+        0 2px 0 ${shades[1]},
+        0 3px 0 ${shades[2]},
+        0 4px 0 ${shades[3]},
+        0 8px 14px rgba(0, 0, 0, 0.55),
+        0 16px 28px rgba(0, 0, 0, 0.35)
+      `
+    };
+  }
+  if (pos >= 31 && pos <= 39) {
+    // Right side: shadow projects LEFT (negative X)
+    return {
+      boxShadow: `
+        -1px 0 0 ${shades[0]},
+        -2px 0 0 ${shades[1]},
+        -3px 0 0 ${shades[2]},
+        -4px 0 0 ${shades[3]},
+        -8px 0 14px rgba(0, 0, 0, 0.55),
+        -16px 0 28px rgba(0, 0, 0, 0.35)
+      `
+    };
+  }
+
+  // Corner Tiles: Diagonal project inwards to the center.
+  return {};
+}
+
+export default function ThreeDBoardSpace({ space, propState, landedOn, myPlayerSeat }) {
+  const ownerSeat = propState?.owner ?? null;
+  const myOwned = ownerSeat !== null && ownerSeat === myPlayerSeat;
+  const orientation = getSpaceOrientation(space.pos);
+
+  const sidePaddingStyle = orientation === 'left'
+    ? { paddingLeft: '18%' }
+    : orientation === 'right'
+      ? { paddingRight: '18%' }
+      : orientation === 'top'
+        ? { paddingTop: '18%' }
+        : orientation === 'bottom'
+          ? { paddingBottom: '18%' }
+          : {};
+
+  // Corner triangle flag indicating current owner — sits in the top-right corner of every owned tile
+  const ownerFlag = ownerSeat !== null ? (
+    <motion.div
+      key={ownerSeat}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+      className="absolute top-0 right-0 z-25 pointer-events-none"
+      style={{
+        width: '20px',
+        height: '20px',
+        clipPath: 'polygon(100% 0, 0 0, 100% 100%)',
+        backgroundColor: TOKEN_COLORS[ownerSeat % TOKEN_COLORS.length],
+        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.45))',
+      }}
+    />
+  ) : null;
+
+  // Houses pop in one-by-one; hotel replaces them
+  const houseIcons = propState?.houses > 0 ? (
+    <div className="flex gap-px justify-center mt-1 z-10">
+      <AnimatePresence>
+        {propState.houses < 5
+          ? Array.from({ length: propState.houses }).map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20, delay: i * 0.04 }}
+              className="w-1.5 h-1.5 bg-emerald-700 rounded-sm shadow-sm"
+            />
+          ))
+          : (
+            <motion.div
+              key="hotel"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className="w-3 h-2 bg-red-700 rounded-sm shadow-sm"
+            />
+          )
+        }
+      </AnimatePresence>
+    </div>
+  ) : null;
+
+  // Mortgaged overlay flips in on X axis
+  const mortgageOverlay = propState?.mortgaged ? (
+    <motion.div
+      className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none z-20"
+      initial={{ opacity: 0, rotateX: 90 }}
+      animate={{ opacity: 1, rotateX: 0 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 20 }}
+      style={{ transformOrigin: 'center top' }}
+    >
+      <span className="text-white text-[7.5px] font-black rotate-12 tracking-wider uppercase border border-white/40 px-1 py-0.5 rounded bg-black/30 backdrop-blur-xs">
+        Mortgaged
+      </span>
+    </motion.div>
+  ) : null;
+
+  // Saffron pulse ring when player just landed here
+  const landedPulse = landedOn ? (
+    <motion.div
+      className="absolute inset-0 pointer-events-none z-30 border-2 border-amber-500 rounded-[inherit]"
+      initial={{ opacity: 0, scale: 0.88 }}
+      animate={{ opacity: [0, 1, 1, 0], scale: [0.88, 1.04, 1.01, 1] }}
+      transition={{ duration: 0.9, ease: 'easeOut' }}
+    />
+  ) : null;
+
+  // Highlight outline: disabled as requested, ownership is defined only by corner flag
+  const highlightRing = '';
+
+  // Core base shell combination
+  const shellBase = `space-3d-card ${get3DClass(space.pos)} ${highlightRing}`;
+
+  // 1. Property Spaces
+  if (space.type === 'property') {
+    const colorBg = COLOR_CLASSES[space.color] ?? 'bg-stone-300';
+    const shellBaseProp = `${shellBase} no-highlight`;
+
+    // Dynamic Flex Direction and Band Layout based on Board Side (Color band always on internal side)
+    if (orientation === 'bottom') {
+      return (
+        <div className={shellBaseProp} style={{ flexDirection: 'column', borderTop: 'none', ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <div className={`${colorBg} h-[24%] w-full border-b border-black/25 shrink-0`} />
+          <div className="flex-1 flex flex-col items-center justify-center p-1 text-center min-w-0 w-full relative overflow-visible">
+            <span 
+              className="font-bold text-[7.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {space.name}
+            </span>
+            <span className="font-extrabold text-[8px] text-[#5d4037] tabular-nums mt-0.5">
+              ₹ {space.price}
+            </span>
+            {houseIcons}
+          </div>
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+
+    if (orientation === 'top') {
+      return (
+        <div className={shellBaseProp} style={{ flexDirection: 'column', borderBottom: 'none', ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <div className="flex-1 flex flex-col items-center justify-center p-1 text-center min-w-0 w-full relative overflow-visible">
+            <span 
+              className="font-bold text-[7.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {space.name}
+            </span>
+            <span className="font-extrabold text-[8px] text-[#5d4037] tabular-nums mt-0.5">
+              ₹ {space.price}
+            </span>
+            {houseIcons}
+          </div>
+          <div className={`${colorBg} h-[24%] w-full border-t border-black/25 shrink-0`} />
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+
+    if (orientation === 'left') {
+      return (
+        <div className={shellBaseProp} style={{ flexDirection: 'row', borderRight: 'none', ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <div className="flex-1 h-full flex flex-col items-center justify-center p-1 text-center min-w-0 relative overflow-visible">
+            <span className="font-extrabold text-[8px] text-[#5d4037] tabular-nums z-10">₹ {space.price}</span>
+            <div className="w-8 h-px bg-[#3e2723]/15 my-1 z-10" />
+            <span 
+              className="font-bold text-[8.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full z-10"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {space.name}
+            </span>
+            {houseIcons}
+          </div>
+          <div className={`${colorBg} w-[24%] h-full border-l border-black/25 ml-auto shrink-0`} />
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+
+    if (orientation === 'right') {
+      return (
+        <div className={shellBaseProp} style={{ flexDirection: 'row', borderLeft: 'none', ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <div className={`${colorBg} w-[24%] h-full border-r border-black/25 mr-auto shrink-0`} />
+          <div className="flex-1 h-full flex flex-col items-center justify-center p-1 text-center min-w-0 relative overflow-visible">
+            <span className="font-extrabold text-[8px] text-[#5d4037] tabular-nums z-10">₹ {space.price}</span>
+            <div className="w-8 h-px bg-[#3e2723]/15 my-1 z-10" />
+            <span 
+              className="font-bold text-[8.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full z-10"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {space.name}
+            </span>
+            {houseIcons}
+          </div>
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+  }
+
+  // 2. Railway Stations
+  if (space.type === 'railway') {
+    const isVertical = orientation === 'bottom' || orientation === 'top';
+    const shortName = space.name.toLowerCase().includes('station') ? 'STATION' : space.name;
+
+    if (isVertical) {
+      return (
+        <div className={`${shellBase} space-railway flex flex-col items-center justify-center p-1 text-center min-w-0 w-full`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <Train size={15} className="text-[#dfb76c] opacity-95 shrink-0 mb-1 filter drop-shadow-md" />
+          <div className="flex-1 flex flex-col items-center justify-center min-w-0 w-full">
+            <span 
+              className="font-bold text-[7.5px] uppercase tracking-wider leading-tight text-[#f6e3a4] break-words w-full drop-shadow-sm"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {shortName}
+            </span>
+            <span className="font-extrabold text-[8px] text-[#dfb76c]/90 mt-0.5 tabular-nums">
+              ₹ {space.price}
+            </span>
+          </div>
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${shellBase} space-railway flex flex-row items-center justify-center p-1.5`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+        <Train size={18} className="text-[#dfb76c] opacity-95 shrink-0 mr-2 filter drop-shadow-md" />
+        <div className="flex-1 flex flex-col items-center justify-center min-w-0 text-center">
+          <span className="font-extrabold text-[8px] text-[#dfb76c]/90 tabular-nums">₹ {space.price}</span>
+          <span 
+            className="font-bold text-[8.5px] uppercase tracking-wider leading-tight text-[#f6e3a4] break-words w-full drop-shadow-sm"
+            style={{ fontFamily: 'var(--font-cinzel), serif' }}
+          >
+            {shortName}
+          </span>
+        </div>
+        {ownerFlag}
+        {mortgageOverlay}
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 3. Utilities (Electric/Water)
+  if (space.type === 'utility') {
+    const Icon = space.id === 'electric_company' ? Lightbulb : Droplets;
+    const isVertical = orientation === 'bottom' || orientation === 'top';
+    const shortName = space.id === 'electric_company' ? 'ELECTRIC' : 'WATER';
+
+    if (isVertical) {
+      return (
+        <div className={`${shellBase} flex flex-col items-center justify-center p-1 text-center min-w-0 w-full relative overflow-hidden`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <Icon size={15} className="text-[#c59b27] shrink-0 mb-1 z-10 filter drop-shadow-xs" />
+          <div className="flex-1 flex flex-col items-center justify-center min-w-0 w-full z-10">
+            <span 
+              className="font-bold text-[7.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
+              {shortName}
+            </span>
+            <span className="font-extrabold text-[8px] text-[#5d4037] mt-0.5 tabular-nums">
+              ₹ {space.price}
+            </span>
+          </div>
+          {ownerFlag}
+          {mortgageOverlay}
+          {landedPulse}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${shellBase} flex flex-row items-center justify-center p-1.5 relative overflow-hidden`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+        <Icon size={18} className="text-[#c59b27] shrink-0 mr-2 z-10 filter drop-shadow-xs" />
+        <div className="flex-1 flex flex-col items-center justify-center min-w-0 text-center z-10">
+          <span className="font-extrabold text-[8px] text-[#5d4037] tabular-nums">₹ {space.price}</span>
+          <span 
+            className="font-bold text-[8.5px] uppercase tracking-wider leading-tight text-[#7d0606] break-words w-full"
+            style={{ fontFamily: 'var(--font-cinzel), serif' }}
+          >
+            {shortName}
+          </span>
+        </div>
+        {ownerFlag}
+        {mortgageOverlay}
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 4. Taxes
+  if (space.type === 'tax') {
+    const isVertical = orientation === 'bottom' || orientation === 'top';
+    if (isVertical) {
+      return (
+        <div className={`${shellBase} flex flex-col items-center justify-center p-1 text-center min-w-0 w-full relative overflow-hidden`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <Receipt size={15} className="text-[#b71c1c] opacity-90 shrink-0 mb-1 z-10 filter drop-shadow-xs" />
+          <div className="flex-1 flex flex-col items-center justify-center min-w-0 w-full z-10">
+            <span className="font-bold text-[7px] uppercase tracking-wide leading-tight text-[#3e2723] break-words w-full">
+              {space.name}
+            </span>
+            <span className="font-extrabold text-[8px] text-[#b71c1c] mt-0.5 tabular-nums">
+              PAY ₹ {space.amount}
+            </span>
+          </div>
+          {landedPulse}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${shellBase} flex flex-row items-center justify-center p-1.5 relative overflow-hidden`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+        <Receipt size={18} className="text-[#b71c1c] opacity-90 shrink-0 mr-2 z-10 filter drop-shadow-xs" />
+        <div className="flex-1 flex flex-col items-center justify-center min-w-0 text-center z-10">
+          <span className="font-extrabold text-[8px] text-[#b71c1c] tabular-nums">PAY ₹ {space.amount}</span>
+          <span className="font-bold text-[8.5px] uppercase tracking-wide leading-tight text-[#3e2723] break-words w-full">
+            {space.name}
+          </span>
+        </div>
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 5. Chance Cards
+  if (space.type === 'chance') {
+    const isVertical = orientation === 'bottom' || orientation === 'top';
+    if (isVertical) {
+      return (
+        <div className={`${shellBase} space-chance no-highlight flex flex-col items-center justify-center p-1 text-center min-w-0 w-full`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <GoldCorners />
+          <QuestionMark3D size={16} className="shrink-0" />
+          {landedPulse}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${shellBase} space-chance no-highlight flex flex-col items-center justify-center p-1`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+        <GoldCorners />
+        <QuestionMark3D size={24} />
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 6. Community Chest
+  if (space.type === 'community_chest') {
+    const isVertical = orientation === 'bottom' || orientation === 'top';
+    if (isVertical) {
+      return (
+        <div className={`${shellBase} space-community-chest no-highlight flex flex-col items-center justify-center p-1 text-center min-w-0 w-full`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+          <GoldCorners />
+          <TreasureChest size={14} className="shrink-0" />
+          {landedPulse}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${shellBase} space-community-chest no-highlight flex flex-row items-center justify-center p-1.5`} style={{ ...getBorderOverride(orientation), ...getSpace3DStyle(space), ...sidePaddingStyle }}>
+        <GoldCorners />
+        <TreasureChest size={18} className="shrink-0 filter drop-shadow-md" />
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 7. GO Space (Bottom-Right Corner)
+  if (space.type === 'go') {
+    return (
+      <div className={`${shellBase} flex flex-col items-center justify-center p-1`} style={{ borderRadius: '0px 0px 6px 0px', ...getSpace3DStyle(space) }}>
+        <ArrowLeft size={14} className="text-[#b71c1c] animate-pulse-soft" strokeWidth={3} />
+        <span className="font-black text-[10px] text-[#b71c1c] leading-none mt-0.5">GO</span>
+        <span className="text-[6.5px] font-bold text-[#3e2723]/75 tracking-wider text-center mt-0.5 leading-tight uppercase">
+          COLLECT ₹ 2,000<br />AS YOU PASS
+        </span>
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 8. Jail Space (Bottom-Left Corner)
+  if (space.type === 'jail') {
+    return (
+      <div className={`${shellBase} space-jail no-highlight no-vignette overflow-hidden relative`} style={{ borderRadius: '0px 0px 0px 6px', width: '100%', height: '100%', ...getSpace3DStyle(space) }}>
+        {/* Left Outer Border: JUST VISITING (Concrete Texture Style) */}
+        <div className="absolute left-0 top-0 bottom-0 w-[24%] bg-[#e5e5e5] flex items-center justify-center border-r border-[#bbb] z-10">
+          <span
+            className="text-[7.5px] font-black tracking-widest text-[#555] uppercase whitespace-nowrap"
+            style={{ transform: 'rotate(-90deg)' }}
+          >
+            JUST VISITING
+          </span>
+        </div>
+
+        {/* Bottom Outer Border */}
+        <div className="absolute left-[24%] right-0 bottom-0 h-[24%] bg-[#e5e5e5] flex items-center justify-center border-t border-[#bbb] z-10">
+        </div>
+
+        {/* Inner Jail Cell: Top-Right (Realistic Prison Gate & Brick Wall Theme) */}
+        <div
+          className="absolute right-0 top-0 w-[76%] h-[76%] border-l border-b border-[#5a1811] text-white flex flex-col items-center justify-center p-1 z-10 overflow-hidden"
+          style={{
+            borderRadius: '0 0 0 8px',
+            background: 'radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%), linear-gradient(135deg, #962d22 0%, #4a1510 100%)',
+            boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.7)',
+          }}
+        >
+          {/* Repeating Brick Wall Grid Texture */}
+          <div
+            className="absolute inset-0 opacity-15 pointer-events-none"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)
+              `,
+              backgroundSize: '10px 5px',
+              backgroundPosition: 'center',
+            }}
+          />
+
+          {/* Vertical Steel Prison Cell Bars (Layered behind text but in front of brick wall) */}
+          <div className="absolute inset-0 flex justify-around px-2.5 pointer-events-none opacity-45 z-0">
+            <div className="w-[3px] h-full bg-gradient-to-r from-[#333] via-[#ccc] to-[#333] filter drop-shadow-[2px_0px_2px_rgba(0,0,0,0.6)]" />
+            <div className="w-[3px] h-full bg-gradient-to-r from-[#333] via-[#ccc] to-[#333] filter drop-shadow-[2px_0px_2px_rgba(0,0,0,0.6)]" />
+            <div className="w-[3px] h-full bg-gradient-to-r from-[#333] via-[#ccc] to-[#333] filter drop-shadow-[2px_0px_2px_rgba(0,0,0,0.6)]" />
+            <div className="w-[3px] h-full bg-gradient-to-r from-[#333] via-[#ccc] to-[#333] filter drop-shadow-[2px_0px_2px_rgba(0,0,0,0.6)]" />
+            <div className="w-[3px] h-full bg-gradient-to-r from-[#333] via-[#ccc] to-[#333] filter drop-shadow-[2px_0px_2px_rgba(0,0,0,0.6)]" />
+          </div>
+
+          {/* Locked Cell Window Content */}
+          <div className="flex flex-col items-center justify-center relative z-10 mt-1">
+            <PrisonLock size={18} className="shrink-0 mb-0.5" />
+            <span
+              className="font-serif font-black text-[10px] text-[#fdf6e2] tracking-widest uppercase"
+              style={{
+                textShadow: '1px 1px 0px #4a1510, 2px 2px 3px rgba(0,0,0,0.7)',
+              }}
+            >
+              JAIL
+            </span>
+            <span className="absolute -top-3 -right-4.5 text-[7px] font-black text-white/50 tracking-wider">IN</span>
+          </div>
+        </div>
+
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 9. Free Parking Space (Top-Left Corner)
+  if (space.type === 'free_parking') {
+    return (
+      <div className={`${shellBase} space-free-parking flex flex-col items-center justify-center p-1`} style={{ borderRadius: '6px 0px 0px 0px', ...getSpace3DStyle(space) }}>
+        <ParkingCircle size={16} className="text-yellow-300 shrink-0 filter drop-shadow-md" />
+        <span className="font-black text-[8.5px] text-[#f6e3a4] tracking-widest mt-1 uppercase drop-shadow-sm">FREE</span>
+        <span className="font-black text-[8.5px] text-[#f6e3a4] tracking-widest -mt-0.5 uppercase drop-shadow-sm">PARKING</span>
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // 10. Go to Jail Space (Top-Right Corner)
+  if (space.type === 'go_to_jail') {
+    return (
+      <div className={`${shellBase} space-go-to-jail flex flex-col items-center justify-center p-1`} style={{ borderRadius: '0px 6px 0px 0px', ...getSpace3DStyle(space) }}>
+        <Handcuffs size={18} className="text-yellow-300 shrink-0 filter drop-shadow-md" />
+        <span className="font-black text-[8.5px] text-[#f6e3a4] tracking-widest mt-1 text-center leading-tight uppercase drop-shadow-sm">GO TO<br />JAIL</span>
+        {landedPulse}
+      </div>
+    );
+  }
+
+  // Fallback
+  return (
+    <div className={`${shellBase} flex flex-col items-center justify-center p-1`}>
+      <span className="text-[10px] text-center">{space.name}</span>
+    </div>
+  );
+}

@@ -1,0 +1,74 @@
+{
+  "name": "express-backend-template",
+  "version": "1.0.0",
+  "description": "This template is based on node-express configuration with mongodb and postgress database",
+  "keywords": [
+    "node",
+    "express",
+    "mongodb",
+    "postgress",
+    "uditraj",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "UDIT RAJ",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "nodemon src/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch --runInBand",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "addDemoId": "node src/scripts/addIdsToDemoData.js"
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.13.0",
+    "@clerk/express": "^1.7.30",
+    "bcrypt": "^6.0.0",
+    "bullmq": "^5.61.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.18",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.8.1",
+    "joi": "^18.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1",
+    "ngrok": "^5.0.0-beta.2",
+    "node-cron": "^4.2.1",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "socket.io": "^4.8.1",
+    "svix": "^1.76.1",
+    "uuid": "^13.0.0",
+    "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.28.4",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/src/game/__tests__/**/*.test.js"
+    ]
+  }
+}

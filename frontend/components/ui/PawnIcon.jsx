@@ -1,7 +1,9 @@
 import React from 'react';
 
 export default function PawnIcon({ color, className }) {
-  const safeColorId = color ? color.replace('#', '') : 'default';
+  const safeColorId = color ? 'pawn-' + color.replace('#', '') : 'default';
+  console.log("PawnIcon render - color:", color, "safeColorId:", safeColorId);
+
   
   return (
     <svg 
@@ -33,25 +35,19 @@ export default function PawnIcon({ color, className }) {
         </filter>
       </defs>
 
-      <g filter={`url(#shadow-${safeColorId})`}>
+      <g className="drop-shadow-md">
         {/* Flared Body Cone */}
         <path 
           d="M 36 40 C 36 70, 25 85, 15 100 L 85 100 C 75 85, 64 70, 64 40 Z" 
           fill={color} 
         />
-        <path 
-          d="M 36 40 C 36 70, 25 85, 15 100 L 85 100 C 75 85, 64 70, 64 40 Z" 
-          fill={`url(#glossy-body-${safeColorId})`} 
-        />
         
         {/* Base Rounded Bottom (3D floor perspective) */}
         <ellipse cx="50" cy="100" rx="35" ry="10" fill={color} />
-        <ellipse cx="50" cy="100" rx="35" ry="10" fill={`url(#glossy-body-${safeColorId})`} />
         <path d="M 15 100 C 15 113, 85 113, 85 100" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="2" />
 
         {/* Head Sphere */}
         <circle cx="50" cy="26" r="22" fill={color} />
-        <circle cx="50" cy="26" r="22" fill={`url(#glossy-head-${safeColorId})`} />
       </g>
     </svg>
   );

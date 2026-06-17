@@ -8,8 +8,8 @@ import PawnIcon from '@/components/ui/PawnIcon';
 // It also has a vertical hop animation (Y axis & scale) triggered on position change.
 export default function PlayerToken({ player, position, index, total }) {
   const color = TOKEN_COLORS[player.seat % TOKEN_COLORS.length];
-  const offsetX = (index % 3) * 6;
-  const offsetY = Math.floor(index / 3) * 6;
+  const offsetX = (index % 3) * 12;
+  const offsetY = Math.floor(index / 3) * 12;
   
   const controls = useAnimation();
 

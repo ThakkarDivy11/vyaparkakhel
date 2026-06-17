@@ -26,7 +26,7 @@ module.exports = {
   },
   development: {
     connection: {
-      port: process.env.PORT || process.env.DEV_PORT || 3000,
+      port: process.env.PORT || process.env.DEV_PORT || 5000,
     },
     database: {
       mongodb: buildMongoUri("dev"),

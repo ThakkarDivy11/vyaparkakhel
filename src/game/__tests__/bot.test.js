@@ -105,3 +105,70 @@ test('returns AUCTION_PASS when bot is high bidder and everyone else has passed'
   expect(action.type).toBe('AUCTION_PASS');
 });
 
+test('returns REJECT_TRADE when bot cannot afford requested cash', () => {
+  const s = makeState({ phase: 'manage' });
+  s.players[0].balance = 100;
+  s.players[0].botDifficulty = 'medium';
+  s.pendingTrade = {
+    offerSeat: 1,
+    targetSeat: 0,
+    offerProperties: [],
+    offerCash: 0,
+    requestProperties: [],
+    requestCash: 200,
+  };
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('REJECT_TRADE');
+});
+
+test('returns ACCEPT_TRADE when trade is highly advantageous for the bot', () => {
+  const s = makeState({ phase: 'manage' });
+  s.players[0].balance = 1000;
+  s.players[0].botDifficulty = 'medium';
+  s.pendingTrade = {
+    offerSeat: 1,
+    targetSeat: 0,
+    offerProperties: ['guwahati'], // Price M60
+    offerCash: 200,
+    requestProperties: [],
+    requestCash: 0,
+  };
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('ACCEPT_TRADE');
+});
+
+test('returns REJECT_TRADE when trade is disadvantageous for the bot', () => {
+  const s = makeState({ phase: 'manage' });
+  s.players[0].balance = 1000;
+  s.players[0].botDifficulty = 'medium';
+  s.properties['guwahati'].owner = 0; // Bot owns Guwahati
+  s.pendingTrade = {
+    offerSeat: 1,
+    targetSeat: 0,
+    offerProperties: [],
+    offerCash: 0,
+    requestProperties: ['guwahati'], // Bot loses Guwahati
+    requestCash: 0,
+  };
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('REJECT_TRADE');
+});
+
+test('returns REJECT_TRADE when trade breaks the bot complete monopoly', () => {
+  const s = makeState({ phase: 'manage' });
+  s.players[0].balance = 1000;
+  s.players[0].botDifficulty = 'medium';
+  s.properties['guwahati'].owner = 0;
+  s.properties['bhubaneshwar'].owner = 0; // Bot owns full brown monopoly
+  s.pendingTrade = {
+    offerSeat: 1,
+    targetSeat: 0,
+    offerProperties: ['panaji'], // Bot gets Panaji (M100)
+    offerCash: 0,
+    requestProperties: ['guwahati'], // Bot loses Guwahati (M60, but breaking monopoly has 3.5x penalty = M210)
+    requestCash: 0,
+  };
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('REJECT_TRADE');
+});
+

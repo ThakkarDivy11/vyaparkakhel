@@ -30,9 +30,9 @@ function getBotAction(state, seat) {
     }
 
     case 'manage': {
-      // Reject any pending trade
+      // Evaluate pending trade
       if (state.pendingTrade?.targetSeat === seat) {
-        return { type: 'REJECT_TRADE', seat };
+        return evaluateTrade(state, player, difficulty);
       }
 
       // If in debt, try to raise cash or declare bankruptcy
@@ -138,6 +138,91 @@ function handleAuction(state, player, difficulty) {
   }
 
   return { type: 'AUCTION_PASS', seat };
+}
+
+function evaluateTrade(state, player, difficulty) {
+  const seat = player.seat;
+  const trade = state.pendingTrade;
+  if (!trade) return { type: 'REJECT_TRADE', seat };
+
+  // 1. If we don't have enough balance to pay the requested cash, we must reject
+  if (player.balance < trade.requestCash) {
+    return { type: 'REJECT_TRADE', seat };
+  }
+
+  // Helper to evaluate property value from bot's perspective
+  const getPropertyValue = (propertyId, isReceiving) => {
+    const space = getSpaceById(propertyId);
+    if (!space) return 0;
+
+    let baseValue = space.price || 0;
+    const propState = state.properties[propertyId];
+    if (propState?.mortgaged) {
+      baseValue = baseValue * 0.6;
+    }
+
+    let group = [];
+    if (space.type === 'property') {
+      group = COLOR_GROUPS[space.color] || [];
+    } else if (space.type === 'railway') {
+      group = RAILWAYS;
+    } else if (space.type === 'utility') {
+      group = UTILITIES;
+    }
+
+    const groupSize = group.length;
+    const ownedByUs = group.filter(id => id !== propertyId && state.properties[id]?.owner === seat).length;
+
+    if (isReceiving) {
+      if (groupSize > 0 && ownedByUs === groupSize - 1) {
+        // Completes our monopoly / set! Extremely valuable
+        return baseValue * 2.5;
+      } else if (ownedByUs > 0) {
+        // We already own parts of this set, so it's valuable to us
+        return baseValue * 1.4;
+      }
+      return baseValue;
+    } else {
+      // We are giving it away
+      const ownsMonopoly = groupSize > 0 && group.every(id => state.properties[id]?.owner === seat);
+      if (ownsMonopoly) {
+        // We own the monopoly, breaking it is extremely undesirable
+        return baseValue * 3.5;
+      }
+
+      // Check if giving it completes the proposer's monopoly
+      const proposerSeat = trade.offerSeat;
+      const ownedByProposer = group.filter(id => id !== propertyId && state.properties[id]?.owner === proposerSeat).length;
+      if (groupSize > 0 && ownedByProposer === groupSize - 1) {
+        // Giving this property completes the other player's monopoly!
+        return baseValue * 2.8;
+      }
+
+      if (ownedByUs > 0) {
+        // Part of a group we are building, don't want to lose it easily
+        return baseValue * 1.3;
+      }
+      return baseValue;
+    }
+  };
+
+  // Calculate total values
+  const totalValueGained = trade.offerCash + trade.offerProperties.reduce((sum, pid) => sum + getPropertyValue(pid, true), 0);
+  const totalValueLost = trade.requestCash + trade.requestProperties.reduce((sum, pid) => sum + getPropertyValue(pid, false), 0);
+
+  // Difficulty-based thresholds for acceptance
+  let threshold = 1.0; // medium
+  if (difficulty === 'easy') {
+    threshold = 0.85; // Easy bot accepts worse trades
+  } else if (difficulty === 'hard') {
+    threshold = 1.15; // Hard bot demands better value
+  }
+
+  if (totalValueGained >= totalValueLost * threshold) {
+    return { type: 'ACCEPT_TRADE', seat };
+  }
+
+  return { type: 'REJECT_TRADE', seat };
 }
 
 function handleDebt(state, player, difficulty) {

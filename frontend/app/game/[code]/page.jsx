@@ -11,7 +11,7 @@ import { Settings, Volume2, VolumeX, MessageSquare, Send, Star } from 'lucide-re
 import clsx from 'clsx';
 import PawnIcon from '@/components/ui/PawnIcon';
 import Board from '@/components/board/Board';
-import PlayerPanel from '@/components/game/PlayerPanel';
+import PlayerPanel, { PropertyChip } from '@/components/game/PlayerPanel';
 import Dice from '@/components/game/Dice';
 import ActionBar from '@/components/game/ActionBar';
 import AuctionPanel from '@/components/game/AuctionPanel';
@@ -47,6 +47,8 @@ export default function GameRoom() {
   const [showMenu, setShowMenu] = useState(false);
   const [showMobileLog, setShowMobileLog] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const [selectedMobilePlayerSeat, setSelectedMobilePlayerSeat] = useState(null);
+  const selectedMobilePlayer = gameState?.players?.find(p => p.seat === selectedMobilePlayerSeat);
   const [error, setError] = useState('');
   const [bgImage, setBgImage] = useState('/backgrounds/bg_vintage.jpg');
   const [turnSeconds, setTurnSeconds] = useState(90);
@@ -511,8 +513,9 @@ export default function GameRoom() {
                 return (
                   <div 
                     key={p.seat} 
+                    onClick={() => setSelectedMobilePlayerSeat(p.seat)}
                     className={clsx(
-                      "flex items-center gap-1.5 px-2.5 py-1 rounded-xl shrink-0 border transition-all duration-200",
+                      "flex items-center gap-1.5 px-2.5 py-1 rounded-xl shrink-0 border transition-all duration-200 cursor-pointer active:scale-95 hover:bg-slate-900/40 select-none",
                       isCurrentTurn 
                         ? "bg-[#cbb992]/20 border-[#ffd54f] shadow-[0_0_8px_rgba(255,213,79,0.3)]" 
                         : "bg-black/60 border-slate-800"
@@ -598,44 +601,7 @@ export default function GameRoom() {
               </div>
             )}
 
-            {/* Roll Dice center console */}
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-1">
-              <span className="text-[8px] text-[#cbb992] uppercase tracking-widest font-black mb-0.5 animate-pulse-soft">
-                {isMyTurn ? "Roll the dice to start your turn" : "Waiting for player to roll..."}
-              </span>
-              <div className="flex items-center justify-center gap-2">
-                <Dice
-                  dice={gameState.lastDice}
-                  isMyTurn={isMyTurn}
-                  phase={gameState.phase}
-                  onRoll={() => {
-                    const extra = isPassAndPlay && myPlayer ? { seat: myPlayer.seat } : {};
-                    emitAction('ROLL_DICE', extra);
-                  }}
-                />
-
-                {isMyTurn && gameState.phase === 'roll' && (
-                  <button
-                    onClick={() => {
-                      const extra = isPassAndPlay && myPlayer ? { seat: myPlayer.seat } : {};
-                      emitAction('ROLL_DICE', extra);
-                    }}
-                    disabled={turnSeconds <= 0}
-                    className="glossy-btn glossy-btn-yellow py-1.5 px-4 font-black uppercase tracking-wider text-[11px] select-none inline-flex items-center gap-1 justify-center rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <rect x="3" y="3" width="18" height="18" rx="3" fill="none" />
-                      <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-                      <circle cx="16" cy="16" r="1.5" fill="currentColor" />
-                      <circle cx="8" cy="16" r="1.5" fill="currentColor" />
-                      <circle cx="16" cy="8" r="1.5" fill="currentColor" />
-                      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                    </svg>
-                    Roll Dice
-                  </button>
-                )}
-              </div>
-            </div>
+            <div className="flex-1" />
 
             {/* Last Roll status */}
             <div className="gold-card px-2.5 py-1 flex flex-col justify-center items-center shrink-0 min-w-[80px]">
@@ -812,6 +778,85 @@ export default function GameRoom() {
               setChatText={setChatText}
               onSendChat={handleSendChat}
             />
+          </div>
+        </Modal>
+      )}
+
+      {/* Mobile Player Info & Properties Modal */}
+      {selectedMobilePlayerSeat !== null && selectedMobilePlayer && (
+        <Modal
+          open={selectedMobilePlayerSeat !== null}
+          onClose={() => setSelectedMobilePlayerSeat(null)}
+          title={`${selectedMobilePlayer.displayName}'s Assets`}
+          size="md"
+        >
+          <div className="flex flex-col gap-4 p-1">
+            {/* Player Profile Header */}
+            <div className="flex items-center gap-3 pb-3 border-b border-[#cbb992]/20">
+              <Avatar
+                src={selectedMobilePlayer.avatarUrl}
+                name={selectedMobilePlayer.displayName}
+                size="md"
+                className="border-2 border-[#ffd54f] ring-1 ring-[#ffe082]/35 shadow-[0_0_8px_rgba(255,213,79,0.3)] rounded-full w-12 h-12 object-cover shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-base text-white truncate flex items-center gap-1.5">
+                  <span>{selectedMobilePlayer.displayName}</span>
+                  {selectedMobilePlayer.inJail && (
+                    <span className="text-[9px] bg-red-950/80 text-red-400 border border-red-900 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                      Jail
+                    </span>
+                  )}
+                  {selectedMobilePlayer.isBankrupt && (
+                    <span className="text-[9px] bg-red-950/80 text-red-500 border border-red-950 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                      Bankrupt
+                    </span>
+                  )}
+                </div>
+                <p className="font-mono font-extrabold text-[#cbb992] text-sm mt-0.5">
+                  ₹{selectedMobilePlayer.balance.toLocaleString()}
+                </p>
+              </div>
+              <div className="shrink-0 w-8 h-8 flex items-center justify-center">
+                <PawnIcon color={TOKEN_COLORS[selectedMobilePlayer.seat % TOKEN_COLORS.length]} className="w-8 h-8 drop-shadow-sm" />
+              </div>
+            </div>
+
+            {/* Properties List */}
+            <div>
+              <h4 className="text-xs font-black uppercase text-[#cbb992] tracking-wider mb-2">
+                Owned Properties ({
+                  gameState.properties
+                    ? Object.values(gameState.properties).filter(ps => ps.owner === selectedMobilePlayer.seat).length
+                    : 0
+                })
+              </h4>
+              <div className="max-h-60 overflow-y-auto scrollbar-thin flex flex-col gap-1.5 pr-1">
+                {(() => {
+                  const owned = gameState.properties
+                    ? Object.entries(gameState.properties)
+                        .filter(([, ps]) => ps.owner === selectedMobilePlayer.seat)
+                        .map(([id, ps]) => {
+                          const space = SPACES.find(s => s.id === id);
+                          return space ? { id, space, ps } : null;
+                        })
+                        .filter(Boolean)
+                    : [];
+
+                  if (owned.length === 0) {
+                    return (
+                      <p className="text-xs text-slate-500 text-center py-4">
+                        No properties owned yet.
+                      </p>
+                    );
+                  }
+
+                  return owned.map(({ id, space, ps }) => (
+                    <PropertyChip key={id} space={space} ps={ps} />
+                  ));
+                })()}
+              </div>
+            </div>
           </div>
         </Modal>
       )}

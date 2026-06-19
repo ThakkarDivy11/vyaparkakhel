@@ -93,9 +93,21 @@ function handlePostRoll(state, player, space, difficulty) {
 
 function handleAuction(state, player, difficulty) {
   const seat = player.seat;
-  const { propertyId, highBid } = state.auction;
+  const { propertyId, highBid, highBidder, passedSeats } = state.auction;
   const space = getSpaceById(propertyId);
   if (!space) return { type: 'AUCTION_PASS', seat };
+
+  // If we are already the highest bidder, do not bid against ourselves
+  if (highBidder === seat) {
+    const active = getActivePlayers(state);
+    const othersPassed = active.every(p => p.seat === seat || passedSeats.includes(p.seat));
+    if (othersPassed) {
+      // If everyone else has passed, we pass to claim the property and end the auction
+      return { type: 'AUCTION_PASS', seat };
+    }
+    // Otherwise, we wait for other players to bid or pass
+    return null;
+  }
 
   if (difficulty === 'easy') {
     if (Math.random() < 0.15 && player.balance > highBid + 10) {

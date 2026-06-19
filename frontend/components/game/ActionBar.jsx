@@ -4,6 +4,7 @@ import {
   Check, RefreshCw
 } from 'lucide-react';
 import clsx from 'clsx';
+import Dice from './Dice';
 
 // Persistent action bar.
 //
@@ -72,6 +73,29 @@ export default function ActionBar({
         <BarButton label="Redeem" onClick={onOpenManage} disabled={!canRedeem} variant="gold" icon={Unlock} />
         <BarButton label="Trade" onClick={onOpenTrade} disabled={!canTrade} variant="red" icon={ArrowRightLeft} />
       </div>
+
+      {phase === 'roll' && (
+        <div className="mt-1 p-2.5 rounded-xl bg-black/50 border border-[#cbb992]/20 flex flex-col items-center gap-2 shrink-0">
+          <span className="text-[9px] text-[#cbb992] uppercase tracking-widest font-black text-center animate-pulse-soft">
+            {isMyTurn ? "Your turn to roll" : "Waiting for player..."}
+          </span>
+          <Dice
+            dice={gameState.lastDice}
+            isMyTurn={isMyTurn}
+            phase={gameState.phase}
+            onRoll={() => onAction('ROLL_DICE')}
+          />
+          {isMyTurn && (
+            <button
+              onClick={() => onAction('ROLL_DICE')}
+              className="w-full glossy-btn glossy-btn-yellow py-2 px-3 font-black uppercase tracking-wider text-xs select-none inline-flex items-center gap-1.5 justify-center rounded-lg transition-all active:scale-[0.97]"
+            >
+              <Dice5 size={14} strokeWidth={2.25} className="shrink-0 animate-bounce" />
+              Roll Dice
+            </button>
+          )}
+        </div>
+      )}
 
       {inManage && (
         <button

@@ -68,3 +68,40 @@ test('returns DECLARE_BANKRUPTCY when in debt and has no houses or mortgagable p
   expect(action.type).toBe('DECLARE_BANKRUPTCY');
 });
 
+test('returns AUCTION_BID when high bid is below medium threshold', () => {
+  const s = makeState({ phase: 'auction' });
+  s.auction = { propertyId: 'guwahati', highBid: 10, highBidder: 1, passedSeats: [] };
+  s.players[0].balance = 1500;
+  s.players[0].botDifficulty = 'medium';
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('AUCTION_BID');
+  expect(action.amount).toBe(20);
+});
+
+test('returns AUCTION_PASS when high bid is above medium threshold', () => {
+  const s = makeState({ phase: 'auction' });
+  s.auction = { propertyId: 'guwahati', highBid: 40, highBidder: 1, passedSeats: [] };
+  s.players[0].balance = 1500;
+  s.players[0].botDifficulty = 'medium';
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('AUCTION_PASS');
+});
+
+test('returns null when bot is already the high bidder but others have not passed', () => {
+  const s = makeState({ phase: 'auction' });
+  s.auction = { propertyId: 'guwahati', highBid: 20, highBidder: 0, passedSeats: [] };
+  s.players[0].balance = 1500;
+  s.players[0].botDifficulty = 'medium';
+  const action = getBotAction(s, 0);
+  expect(action).toBeNull();
+});
+
+test('returns AUCTION_PASS when bot is high bidder and everyone else has passed', () => {
+  const s = makeState({ phase: 'auction' });
+  s.auction = { propertyId: 'guwahati', highBid: 20, highBidder: 0, passedSeats: [1] };
+  s.players[0].balance = 1500;
+  s.players[0].botDifficulty = 'medium';
+  const action = getBotAction(s, 0);
+  expect(action.type).toBe('AUCTION_PASS');
+});
+

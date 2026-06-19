@@ -609,6 +609,39 @@ async function updateConnectionStatus(io, gameId, userId, seat, connected) {
 
 async function triggerBotPlay(gameId, state) {
   if (!_io) return;
+
+  if (state.phase === 'auction' && state.auction) {
+    // Find all active bots that have not passed yet
+    const activeBots = state.players.filter(
+      p => p.isBot && !p.isBankrupt && !state.auction.passedSeats.includes(p.seat)
+    );
+
+    activeBots.forEach(bot => {
+      // Add a randomized delay so they don't bid at the exact same instant
+      setTimeout(async () => {
+        try {
+          const currentState = await loadGameState(gameId);
+          if (!currentState || currentState.phase !== 'auction' || !currentState.auction || currentState.status !== 'active') {
+            return;
+          }
+          // Make sure the bot hasn't passed in the meantime
+          if (currentState.auction.passedSeats.includes(bot.seat)) {
+            return;
+          }
+
+          const { getBotAction } = require('../../game/bot');
+          const botAction = getBotAction(currentState, bot.seat);
+          if (botAction) {
+            await processGameAction(_io, gameId, botAction);
+          }
+        } catch (err) {
+          console.error(`[bot auction-play] failed for seat ${bot.seat}:`, err.message);
+        }
+      }, 1500 + Math.random() * 1000);
+    });
+    return;
+  }
+
   const nextPlayer = state.players.find(p => p.seat === state.currentTurnSeat);
   if (nextPlayer?.isBot && state.status === 'active') {
     setTimeout(async () => {
@@ -619,7 +652,9 @@ async function triggerBotPlay(gameId, state) {
         }
         const { getBotAction } = require('../../game/bot');
         const botAction = getBotAction(currentState, nextPlayer.seat);
-        await processGameAction(_io, gameId, botAction);
+        if (botAction) {
+          await processGameAction(_io, gameId, botAction);
+        }
       } catch (err) {
         console.error(`[bot auto-play] failed for seat ${nextPlayer.seat}:`, err.message);
       }

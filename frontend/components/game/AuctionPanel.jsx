@@ -59,6 +59,11 @@ export default function AuctionPanel({ auction, players, myPlayer, onAction }) {
                   ? `${space.color?.replace('_', ' ')} group`
                   : space?.type}
               </p>
+              {space?.price && (
+                <p className="text-xs font-semibold text-text-muted mt-2">
+                  Board Price: <span className="text-text font-bold">₹{space.price}</span>
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -76,6 +81,34 @@ export default function AuctionPanel({ auction, players, myPlayer, onAction }) {
               by <span className="font-semibold text-text">{highBidder.displayName}</span>
             </p>
           )}
+        </div>
+
+        {/* Bidders Status */}
+        <div className="px-6 pt-4">
+          <div className="text-xs uppercase tracking-widest font-semibold text-text-muted mb-2">
+            Bidders
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {players?.map(p => {
+              const hasPassed = (auction.passedSeats ?? []).includes(p.seat);
+              return (
+                <div 
+                  key={p.seat} 
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                    hasPassed 
+                      ? 'bg-red-500/10 text-red-500 border border-red-500/20' 
+                      : 'bg-green-500/10 text-green-500 border border-green-500/20'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${hasPassed ? 'bg-red-500' : 'bg-green-500 animate-pulse'}`} />
+                  <span>{p.displayName}</span>
+                  <span className="text-[10px] opacity-80">
+                    ({hasPassed ? 'Folded' : 'Active'})
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Bid input */}

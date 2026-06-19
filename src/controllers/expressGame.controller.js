@@ -274,7 +274,16 @@ exports.endTurn = catchAsync(async (req, res, next) => {
         break;
       }
 
+      if (newState.phase === 'auction') {
+        // Auction involves multiple players acting concurrently, so we cannot loop synchronously
+        break;
+      }
+
       const botAction = getBotAction(newState, activePlayer.seat);
+      if (!botAction) {
+        console.log(`[endTurn] AI (seat ${activePlayer.seat}) decides: null (waiting)`);
+        break;
+      }
       console.log(`[endTurn] AI (seat ${activePlayer.seat}) decides:`, botAction.type);
 
       if (botAction.type === 'ROLL_DICE' && (!botAction.dice || botAction.dice.length !== 2)) {

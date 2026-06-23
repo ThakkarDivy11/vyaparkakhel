@@ -532,12 +532,7 @@ function WindowsIcon({ size = 20, className = "" }) {
       <path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zM10.8 1.95L24 0v11.55H10.8V1.95zM10.8 12.45H24v11.55l-13.2-1.95v-9.6z" />
     </svg>
   );
-}
-
-function DiscordIcon({ size = 20, className = "" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 127.14 96.36" fill="currentColor" className={className}>
-      <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.4,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,67.43,67.43,0,0,1-10.5-5A52.5,52.5,0,0,0,31,77.73a75.22,75.22,0,0,0,65.18,0,52.5,52.5,0,0,0,2.83,2.81,67.43,67.43,0,0,1-10.5,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,32.61-18.83C129.87,54.65,123.51,31.58,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.88,46,53.88,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.12,46,96.12,53,91,65.69,84.69,65.69Z" />
+84.69, 65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.12,46,96.12,53,91,65.69,84.69,65.69Z" />
     </svg>
   );
 }
@@ -553,12 +548,12 @@ function DashboardMusicPlayer() {
   const nextNoteRef = useRef(0);
   const beatRef = useRef(0);
 
-  // Indian pentatonic scale (sitar-like) — Sa Re Ga Pa Dha
+  // Synthwave / Chillhop upbeat vibe — A minor pentatonic
   // frequencies in Hz
-  const SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 784.00, 880.00];
-  // Melody pattern indices into SCALE — creates a looping Indian motif
-  const MELODY = [0, 2, 4, 5, 4, 2, 0, 0, 2, 4, 7, 5, 4, 2, 4, 0];
-  const BASS   = [0, 0, 4, 0, 0, 4, 5, 4]; // bass drone pattern
+  const SCALE = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 784.00];
+  // Groovy synth melody pattern
+  const MELODY = [5, 7, 8, 7, 5, 2, 3, 5, 5, 7, 9, 8, 5, 2, 3, 2];
+  const BASS   = [0, 0, 3, 2, 0, 0, 2, 1]; // funky bass line
 
   function createCtx() {
     if (ctxRef.current) return ctxRef.current;
@@ -571,46 +566,60 @@ function DashboardMusicPlayer() {
     return ctx;
   }
 
-  // Pluck / sitar-like note using karplus-strong approximation via oscillators
-  function playNote(ctx, freq, time, dur, gainVal = 0.18, type = 'triangle') {
+  // Retro synth pluck
+  function playNote(ctx, freq, time, dur, gainVal = 0.15, type = 'square') {
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    
     osc.type = type;
     osc.frequency.setValueAtTime(freq, time);
-    // slight vibrato
-    osc.frequency.setValueAtTime(freq * 1.003, time + dur * 0.4);
-    osc.frequency.setValueAtTime(freq, time + dur * 0.7);
+    
+    // Plucky envelope filter
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(freq * 4, time);
+    filter.frequency.exponentialRampToValueAtTime(freq, time + dur * 0.5);
+    filter.Q.value = 5;
+
     g.gain.setValueAtTime(0, time);
-    g.gain.linearRampToValueAtTime(gainVal, time + 0.015);
+    g.gain.linearRampToValueAtTime(gainVal, time + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
-    osc.connect(g);
+    
+    osc.connect(filter);
+    filter.connect(g);
     g.connect(gainRef.current);
+    
     osc.start(time);
     osc.stop(time + dur + 0.05);
   }
 
-  // Tabla-like percussion: short burst of noise
-  function playTabla(ctx, time, accent = false) {
-    const bufferSize = ctx.sampleRate * 0.08;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
-    const src = ctx.createBufferSource();
-    src.buffer = buffer;
+  // Lofi Kick/Snare
+  function playBeat(ctx, time, isKick = true) {
+    const osc = ctx.createOscillator();
     const g = ctx.createGain();
-    g.gain.setValueAtTime(accent ? 0.22 : 0.12, time);
-    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = accent ? 200 : 120;
-    filter.Q.value = 3;
-    src.connect(filter);
-    filter.connect(g);
+    
+    if (isKick) {
+      // Punchy Synth Kick
+      osc.frequency.setValueAtTime(150, time);
+      osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.5);
+      g.gain.setValueAtTime(0.4, time);
+      g.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+    } else {
+      // Synth Snare (noise-like via high freq FM)
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(300, time);
+      osc.frequency.exponentialRampToValueAtTime(100, time + 0.2);
+      g.gain.setValueAtTime(0.2, time);
+      g.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+    }
+
+    osc.connect(g);
     g.connect(gainRef.current);
-    src.start(time);
+    osc.start(time);
+    osc.stop(time + 0.5);
   }
 
-  const BPM = 76;
+  const BPM = 95; // Slightly faster, upbeat tempo
   const BEAT_DUR = 60 / BPM;
   const LOOKAHEAD = 0.1; // schedule 100ms ahead
 
@@ -621,25 +630,23 @@ function DashboardMusicPlayer() {
       const t = nextNoteRef.current;
       const beat = beatRef.current;
 
-      // Melody (every beat)
-      const melIdx = MELODY[beat % MELODY.length];
-      playNote(ctx, SCALE[melIdx], t, BEAT_DUR * 0.75, 0.16, 'triangle');
-
-      // Harmony (every 2 beats, slightly detuned)
-      if (beat % 2 === 0) {
-        playNote(ctx, SCALE[melIdx] * 1.5, t + BEAT_DUR * 0.5, BEAT_DUR * 0.4, 0.07, 'sine');
+      // Melody (every beat, syncopated feel)
+      if (beat % 2 === 0 || beat % 3 === 0) {
+        const melIdx = MELODY[beat % MELODY.length];
+        playNote(ctx, SCALE[melIdx], t, BEAT_DUR * 0.5, 0.12, 'square');
       }
 
-      // Bass drone (every 2 beats)
+      // Funky Bass (every beat)
       const bassIdx = BASS[(beat / 2 | 0) % BASS.length];
-      if (beat % 2 === 0) {
-        playNote(ctx, SCALE[bassIdx] * 0.5, t, BEAT_DUR * 1.8, 0.13, 'sine');
-      }
+      playNote(ctx, SCALE[bassIdx] * 0.5, t, BEAT_DUR * 0.8, 0.15, 'sawtooth');
 
-      // Tabla accent on beat 1 & 3 of a 4-beat cycle
+      // Kick on 1 and 3, Snare on 2 and 4
       const subBeat = beat % 4;
-      playTabla(ctx, t, subBeat === 0);
-      if (subBeat === 2) playTabla(ctx, t + BEAT_DUR * 0.5, false);
+      if (subBeat === 0 || subBeat === 2) {
+        playBeat(ctx, t, true); // Kick
+      } else {
+        playBeat(ctx, t, false); // Snare
+      }
 
       nextNoteRef.current += BEAT_DUR;
       beatRef.current = (beatRef.current + 1) % (MELODY.length * 4);

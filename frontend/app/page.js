@@ -542,6 +542,222 @@ function DiscordIcon({ size = 20, className = "" }) {
   );
 }
 
+// ─── DASHBOARD MUSIC PLAYER (Web Audio API — no external file needed) ───────
+function DashboardMusicPlayer() {
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.35);
+  const [showVolume, setShowVolume] = useState(false);
+  const ctxRef = useRef(null);
+  const gainRef = useRef(null);
+  const schedulerRef = useRef(null);
+  const nextNoteRef = useRef(0);
+  const beatRef = useRef(0);
+
+  // Indian pentatonic scale (sitar-like) — Sa Re Ga Pa Dha
+  // frequencies in Hz
+  const SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 784.00, 880.00];
+  // Melody pattern indices into SCALE — creates a looping Indian motif
+  const MELODY = [0, 2, 4, 5, 4, 2, 0, 0, 2, 4, 7, 5, 4, 2, 4, 0];
+  const BASS   = [0, 0, 4, 0, 0, 4, 5, 4]; // bass drone pattern
+
+  function createCtx() {
+    if (ctxRef.current) return ctxRef.current;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(volume, ctx.currentTime);
+    masterGain.connect(ctx.destination);
+    ctxRef.current = ctx;
+    gainRef.current = masterGain;
+    return ctx;
+  }
+
+  // Pluck / sitar-like note using karplus-strong approximation via oscillators
+  function playNote(ctx, freq, time, dur, gainVal = 0.18, type = 'triangle') {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, time);
+    // slight vibrato
+    osc.frequency.setValueAtTime(freq * 1.003, time + dur * 0.4);
+    osc.frequency.setValueAtTime(freq, time + dur * 0.7);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(gainVal, time + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+    osc.connect(g);
+    g.connect(gainRef.current);
+    osc.start(time);
+    osc.stop(time + dur + 0.05);
+  }
+
+  // Tabla-like percussion: short burst of noise
+  function playTabla(ctx, time, accent = false) {
+    const bufferSize = ctx.sampleRate * 0.08;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(accent ? 0.22 : 0.12, time);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = accent ? 200 : 120;
+    filter.Q.value = 3;
+    src.connect(filter);
+    filter.connect(g);
+    g.connect(gainRef.current);
+    src.start(time);
+  }
+
+  const BPM = 76;
+  const BEAT_DUR = 60 / BPM;
+  const LOOKAHEAD = 0.1; // schedule 100ms ahead
+
+  function scheduler() {
+    const ctx = ctxRef.current;
+    if (!ctx) return;
+    while (nextNoteRef.current < ctx.currentTime + LOOKAHEAD) {
+      const t = nextNoteRef.current;
+      const beat = beatRef.current;
+
+      // Melody (every beat)
+      const melIdx = MELODY[beat % MELODY.length];
+      playNote(ctx, SCALE[melIdx], t, BEAT_DUR * 0.75, 0.16, 'triangle');
+
+      // Harmony (every 2 beats, slightly detuned)
+      if (beat % 2 === 0) {
+        playNote(ctx, SCALE[melIdx] * 1.5, t + BEAT_DUR * 0.5, BEAT_DUR * 0.4, 0.07, 'sine');
+      }
+
+      // Bass drone (every 2 beats)
+      const bassIdx = BASS[(beat / 2 | 0) % BASS.length];
+      if (beat % 2 === 0) {
+        playNote(ctx, SCALE[bassIdx] * 0.5, t, BEAT_DUR * 1.8, 0.13, 'sine');
+      }
+
+      // Tabla accent on beat 1 & 3 of a 4-beat cycle
+      const subBeat = beat % 4;
+      playTabla(ctx, t, subBeat === 0);
+      if (subBeat === 2) playTabla(ctx, t + BEAT_DUR * 0.5, false);
+
+      nextNoteRef.current += BEAT_DUR;
+      beatRef.current = (beatRef.current + 1) % (MELODY.length * 4);
+    }
+    schedulerRef.current = setTimeout(scheduler, 30);
+  }
+
+  function startMusic() {
+    const ctx = createCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    nextNoteRef.current = ctx.currentTime + 0.05;
+    beatRef.current = 0;
+    scheduler();
+    setPlaying(true);
+  }
+
+  function stopMusic() {
+    clearTimeout(schedulerRef.current);
+    schedulerRef.current = null;
+    setPlaying(false);
+  }
+
+  function togglePlay() {
+    if (playing) { stopMusic(); } else { startMusic(); }
+  }
+
+  // Update master gain when volume slider changes
+  useEffect(() => {
+    if (gainRef.current && ctxRef.current) {
+      gainRef.current.gain.setTargetAtTime(volume, ctxRef.current.currentTime, 0.05);
+    }
+  }, [volume]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(schedulerRef.current);
+      ctxRef.current?.close();
+    };
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+      {/* Volume slider */}
+      {showVolume && (
+        <div className="bg-black/80 backdrop-blur-md border border-[#cbb992]/30 rounded-2xl px-4 py-3 flex flex-col items-center gap-2 shadow-xl animate-fade-in">
+          <span className="text-[9px] uppercase tracking-widest text-[#cbb992] font-black">Volume</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={e => setVolume(parseFloat(e.target.value))}
+            className="w-24 accent-yellow-400 cursor-pointer"
+          />
+          <span className="text-[10px] font-mono text-white/60">{Math.round(volume * 100)}%</span>
+        </div>
+      )}
+
+      {/* Main music button */}
+      <div className="flex items-center gap-2">
+        {/* Volume toggle */}
+        <button
+          onClick={() => setShowVolume(v => !v)}
+          className="w-8 h-8 rounded-full bg-black/60 border border-[#cbb992]/30 flex items-center justify-center text-[#cbb992] hover:bg-[#cbb992]/10 transition-all"
+          title="Volume"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            {volume > 0.5 && <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>}
+            {volume > 0 && <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>}
+          </svg>
+        </button>
+
+        {/* Play/Pause main button */}
+        <button
+          onClick={togglePlay}
+          title={playing ? 'Pause Music' : 'Play Dashboard Music'}
+          className={`
+            relative w-14 h-14 rounded-full flex items-center justify-center
+            shadow-[0_0_20px_rgba(255,213,79,0.35)] border-2
+            transition-all duration-300 cursor-pointer select-none group
+            ${playing
+              ? 'bg-gradient-to-br from-[#ffd54f] to-[#c8961e] border-[#ffd54f] shadow-[0_0_28px_rgba(255,213,79,0.55)]'
+              : 'bg-black/70 border-[#cbb992]/40 hover:border-[#ffd54f]/60 hover:shadow-[0_0_20px_rgba(255,213,79,0.3)]'
+            }
+          `}
+        >
+          {/* Pulsing ring when playing */}
+          {playing && (
+            <>
+              <span className="absolute inset-0 rounded-full border-2 border-[#ffd54f]/40 animate-ping" />
+              <span className="absolute inset-[-4px] rounded-full border border-[#ffd54f]/20 animate-pulse" />
+            </>
+          )}
+
+          {/* Musical note icon */}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill={playing ? '#1a0e00' : '#cbb992'} className="relative z-10">
+            {playing ? (
+              // Pause icon
+              <><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></>
+            ) : (
+              // Music note icon
+              <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" stroke={playing ? '#1a0e00' : '#cbb992'} strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Label */}
+      <span className="text-[8px] uppercase tracking-widest text-[#cbb992]/60 font-black text-right pr-1">
+        {playing ? '♪ Vyapar Tune' : 'Music Off'}
+      </span>
+    </div>
+  );
+}
+
 // ─── PAWN SVG COMPONENT ─────────────────────────────────────────────────
 const PawnSVG = ({ color = '#ffd54f', size = 40 }) => (
   <svg width={size} height={size} viewBox="0 0 64 80" fill="none" className="pawn-piece">
@@ -809,6 +1025,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <DashboardMusicPlayer />
       </PageBackground>
     );
   }
@@ -1405,6 +1622,7 @@ export default function Home() {
             </div>
           </footer>
         </div>
+        <DashboardMusicPlayer />
       </PageBackground>
     );
   }
@@ -1869,7 +2087,7 @@ export default function Home() {
           {error && <p className="text-red-600 text-xs text-center font-bold">{error}</p>}
         </form>
       </Modal>
+      <DashboardMusicPlayer />
     </>
   );
 }
-

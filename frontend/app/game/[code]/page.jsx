@@ -51,7 +51,10 @@ export default function GameRoom() {
   const selectedMobilePlayer = gameState?.players?.find(p => p.seat === selectedMobilePlayerSeat);
   const [error, setError] = useState('');
   const [bgImage, setBgImage] = useState('/backgrounds/bg_vintage.jpg');
-  const [turnSeconds, setTurnSeconds] = useState(90);
+  const turnDeadlineRef = useRef(null);
+  const gameStatusRef = useRef(null);
+  const timeLimitRef = useRef(90);
+  const [turnSeconds, setTurnSeconds] = useState(0);
   const [localChats, setLocalChats] = useState([]);
   const [chatText, setChatText] = useState('');
   // Pawn-hop gating: delay the buy/auction modal until the pawn reaches its space
@@ -172,24 +175,39 @@ export default function GameRoom() {
     showCard({ description: gameState.lastCard.description, deckType: gameState.lastCard.deck });
   }, [gameState?.cardSeq, gameState?.lastCard, showCard]);
 
-  // Sync turn countdown timer with server turnDeadline (with clock-skew fallback)
+  // Keep refs in sync with latest gameState (refs avoid stale closures inside setInterval)
   useEffect(() => {
-    if (!gameState?.turnDeadline || gameState.status !== 'active') return;
-    const limit = gameState.settings?.timePerTurnSec || 60;
-    let initialRemaining = Math.ceil((gameState.turnDeadline - Date.now()) / 1000);
-    if (initialRemaining <= 0 || initialRemaining > limit) {
-      initialRemaining = limit;
-    }
-    setTurnSeconds(initialRemaining);
-  }, [gameState?.turnDeadline, gameState?.status, gameState?.settings?.timePerTurnSec, gameState?.currentTurnSeat]);
+    turnDeadlineRef.current = gameState?.turnDeadline ?? null;
+  }, [gameState?.turnDeadline]);
 
-  // Turn countdown timer ticker
+  useEffect(() => {
+    gameStatusRef.current = gameState?.status ?? null;
+  }, [gameState?.status]);
+
+  useEffect(() => {
+    timeLimitRef.current = gameState?.settings?.timePerTurnSec || 90;
+  }, [gameState?.settings?.timePerTurnSec]);
+
+  // Single long-lived interval — reads from refs each tick so it never has stale values.
+  // This is refresh-safe: socket reconnect pushes a new state_update → refs update → timer shows correct time.
   useEffect(() => {
     const interval = setInterval(() => {
-      setTurnSeconds((s) => (s > 0 ? s - 1 : 0));
+      if (gameStatusRef.current !== 'active') return;
+      const deadline = turnDeadlineRef.current;
+      if (!deadline) return;
+      const remaining = Math.ceil((deadline - Date.now()) / 1000);
+      setTurnSeconds(remaining > 0 ? Math.min(remaining, timeLimitRef.current) : 0);
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // empty deps — interval created once, uses refs for live values
+
+  // Immediate update when server pushes a new deadline (no need to wait for next tick)
+  useEffect(() => {
+    if (!gameState?.turnDeadline || gameState?.status !== 'active') return;
+    const remaining = Math.ceil((gameState.turnDeadline - Date.now()) / 1000);
+    const limit = gameState.settings?.timePerTurnSec || 90;
+    setTurnSeconds(remaining > 0 ? Math.min(remaining, limit) : 0);
+  }, [gameState?.turnDeadline, gameState?.currentTurnSeat, gameState?.status, gameState?.settings?.timePerTurnSec]);
 
   // Client-side fallback: if the local timer runs out and it is my turn,
   // emit a TIMEOUT action. This handles cases where the server background workers are down/delayed.

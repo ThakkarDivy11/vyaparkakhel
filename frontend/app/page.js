@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth, SignInButton, useUser, SignOutButton } from '@clerk/nextjs';
 import {
   Users, Cpu, Globe, Smartphone, Trophy, BookOpen,
@@ -1055,6 +1056,7 @@ export default function Home() {
               <a href="#features" onClick={(e) => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-cafe-royale-400 transition-colors">FEATURES</a>
               <a href="#game-modes" onClick={(e) => { e.preventDefault(); document.getElementById('game-modes')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-cafe-royale-400 transition-colors font-black">GAME MODES</a>
               <a href="#leaderboard" onClick={(e) => { e.preventDefault(); document.getElementById('leaderboard')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-cafe-royale-400 transition-colors">LEADERBOARD</a>
+              <Link href="/store" className="hover:text-cafe-royale-400 transition-colors text-cafe-royale-300 drop-shadow-[0_0_8px_rgba(212,168,75,0.6)]">STORE</Link>
               <span className="opacity-40 font-medium cursor-not-allowed">NEWS</span>
               <span className="opacity-40 font-medium cursor-not-allowed">SUPPORT</span>
             </nav>

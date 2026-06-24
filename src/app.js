@@ -15,6 +15,7 @@ const webhookRouter = require("./routers/webhook.routes");
 const gameRouter = require("./routers/user/game.routes");
 const expressGameRouter = require("./routers/user/expressGame.routes");
 const propertyRouter = require("./routers/user/property.routes");
+const paymentRouter = require("./routers/user/payment.routes");
 
 // constants and variables definitions here
 const app = express();
@@ -43,6 +44,7 @@ app.use(requestTimeMiddleware);
 // Mount user routes
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/games", gameRouter);
+app.use("/api/v1/payments", paymentRouter);
 
 // Mount AI/Express REST routes
 app.use("/api/game", expressGameRouter);

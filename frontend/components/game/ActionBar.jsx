@@ -84,6 +84,7 @@ export default function ActionBar({
             isMyTurn={isMyTurn}
             phase={gameState.phase}
             onRoll={() => onAction('ROLL_DICE')}
+            activePlayer={gameState.players.find(p => p.seat === gameState.currentTurnSeat)}
           />
           {isMyTurn && (
             <button

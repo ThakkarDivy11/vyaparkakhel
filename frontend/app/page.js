@@ -1709,18 +1709,18 @@ export default function Home() {
           <div className="dash-currencies-wrap">
             <div className="dash-currency">
               <div className="dash-currency-icon coins">🪙</div>
-              <span className="dash-currency-val">0</span>
-              <button className="dash-currency-plus">+</button>
+              <span className="dash-currency-val">{profile?.stats?.totalEarnings || 0}</span>
+              <button className="dash-currency-plus" onClick={() => router.push('/store')}>+</button>
             </div>
             <div className="dash-currency">
               <div className="dash-currency-icon cash">💵</div>
               <span className="dash-currency-val">0</span>
-              <button className="dash-currency-plus">+</button>
+              <button className="dash-currency-plus" onClick={() => router.push('/store')}>+</button>
             </div>
             <div className="dash-currency">
               <div className="dash-currency-icon gems">💎</div>
-              <span className="dash-currency-val">0</span>
-              <button className="dash-currency-plus">+</button>
+              <span className="dash-currency-val">{profile?.wallet?.tokens || 0}</span>
+              <button className="dash-currency-plus" onClick={() => router.push('/store')}>+</button>
             </div>
           </div>
 
@@ -1762,8 +1762,8 @@ export default function Home() {
                     width: '54px',
                     height: '54px',
                     borderRadius: '50%',
-                    border: '2.5px solid #d4a84b',
-                    boxShadow: '0 0 10px rgba(212, 168, 75, 0.4)',
+                    border: profile?.wallet?.cosmetics?.includes('vip_border') ? '3px solid #00ffcc' : '2.5px solid #d4a84b',
+                    boxShadow: profile?.wallet?.cosmetics?.includes('vip_border') ? '0 0 15px rgba(0, 255, 204, 0.8)' : '0 0 10px rgba(212, 168, 75, 0.4)',
                     objectFit: 'cover'
                   }}
                 />
@@ -1804,7 +1804,7 @@ export default function Home() {
                 <svg className="dash-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 Profile
               </button>
-              <button className="dash-nav-item">
+              <button className="dash-nav-item" onClick={() => router.push('/store')}>
                 <svg className="dash-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
                 Store
               </button>

@@ -13,18 +13,18 @@ const reconnectJobId = (gameId, userId) => `reconnect-${gameId}-${userId}`;
 
 // Called after every game action to reset the turn timer
 async function resetTurnTimer(gameId, seat, durationMs) {
-  const existing = await turnTimerQueue.getJob(turnJobId(gameId));
-  if (existing) await existing.remove();
+  // We use a unique job ID to ensure we can always schedule a new timer,
+  // even if an old one is currently active and locked by the worker.
+  const uniqueJobId = `turn-${gameId}-${Date.now()}`;
   await turnTimerQueue.add(
     'timeout',
     { gameId, seat },
-    { jobId: turnJobId(gameId), delay: durationMs }
+    { jobId: uniqueJobId, delay: durationMs }
   );
 }
 
 async function cancelTurnTimer(gameId) {
-  const job = await turnTimerQueue.getJob(turnJobId(gameId));
-  if (job) await job.remove();
+  // We can't easily cancel all dynamic IDs, but stale timeouts are ignored by rules.js
 }
 
 // Reconnect window: 5 minutes in prod, 60s in dev for faster iteration.
@@ -53,7 +53,13 @@ function initTimerWorkers(io) {
   new Worker('turn-timers', async (job) => {
     const { gameId, seat } = job.data;
     const { processGameAction } = require('../services/realtime/socketServer');
-    await processGameAction(io, gameId, { type: 'TIMEOUT', seat });
+    try {
+      await processGameAction(io, gameId, { type: 'TIMEOUT', seat });
+    } catch (err) {
+      if (err.message !== 'stale_timeout') {
+        console.error(`[timer worker] failed for game ${gameId}:`, err.message);
+      }
+    }
   }, { connection });
 
   new Worker('reconnect-windows', async (job) => {

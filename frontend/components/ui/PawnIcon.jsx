@@ -1,10 +1,13 @@
 import React from 'react';
+import DiamondPawn3D from './DiamondPawn3D';
 
-export default function PawnIcon({ color, className }) {
+export default function PawnIcon({ color, className, theme = 'default' }) {
   const safeColorId = color ? 'pawn-' + color.replace('#', '') : 'default';
-  console.log("PawnIcon render - color:", color, "safeColorId:", safeColorId);
 
-  
+  if (theme === 'diamond_pawn') {
+    return <DiamondPawn3D color={color} className={className} />;
+  }
+
   return (
     <svg 
       viewBox="0 0 100 120" 
@@ -35,20 +38,25 @@ export default function PawnIcon({ color, className }) {
         </filter>
       </defs>
 
+      {/* Flared Body Cone */}
       <g className="drop-shadow-md">
-        {/* Flared Body Cone */}
         <path 
           d="M 36 40 C 36 70, 25 85, 15 100 L 85 100 C 75 85, 64 70, 64 40 Z" 
           fill={color} 
         />
-        
-        {/* Base Rounded Bottom (3D floor perspective) */}
-        <ellipse cx="50" cy="100" rx="35" ry="10" fill={color} />
-        <path d="M 15 100 C 15 113, 85 113, 85 100" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="2" />
+          <path 
+            d="M 36 40 C 36 70, 25 85, 15 100 L 85 100 C 75 85, 64 70, 64 40 Z" 
+            fill={`url(#glossy-body-${safeColorId})`} 
+          />
+          
+          {/* Base Rounded Bottom (3D floor perspective) */}
+          <ellipse cx="50" cy="100" rx="35" ry="10" fill={color} />
+          <path d="M 15 100 C 15 113, 85 113, 85 100" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="2" />
 
-        {/* Head Sphere */}
-        <circle cx="50" cy="26" r="22" fill={color} />
-      </g>
+          {/* Head Sphere */}
+          <circle cx="50" cy="26" r="22" fill={color} />
+          <circle cx="50" cy="26" r="22" fill={`url(#glossy-head-${safeColorId})`} />
+        </g>
     </svg>
   );
 }

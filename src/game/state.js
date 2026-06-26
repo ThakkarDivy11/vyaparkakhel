@@ -39,6 +39,8 @@ function createInitialState(gameDoc, playerDocs) {
     userId: String(p.userId),
     providerId: p.providerId ? String(p.providerId) : null,
     displayName: p.displayName,
+    avatarUrl: p.avatarUrl || null,
+    cosmetics: p.cosmetics || [],
     balance: 1500,
     position: 0,
     inJail: false,

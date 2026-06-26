@@ -16,6 +16,7 @@ const gameRouter = require("./routers/user/game.routes");
 const expressGameRouter = require("./routers/user/expressGame.routes");
 const propertyRouter = require("./routers/user/property.routes");
 const paymentRouter = require("./routers/user/payment.routes");
+const storeRouter = require("./routers/user/store.routes");
 
 // constants and variables definitions here
 const app = express();
@@ -26,7 +27,11 @@ const secretKey = clerk.secretKey || process.env.CLERK_SECRET_KEY || process.env
 
 // middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString();
+  }
+}));
 
 if (env === "development") {
   app.use(morgan("dev"));
@@ -45,6 +50,7 @@ app.use(requestTimeMiddleware);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/games", gameRouter);
 app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/store", storeRouter);
 
 // Mount AI/Express REST routes
 app.use("/api/game", expressGameRouter);

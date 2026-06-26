@@ -43,7 +43,7 @@ export default function PlayerToken({ player, position, index, total }) {
         animate={controls}
         className="w-full h-full flex items-center justify-center"
       >
-        <PawnIcon color={color} className="w-full h-full drop-shadow-md" />
+        <PawnIcon color={color} className="w-full h-full drop-shadow-md" theme={player?.cosmetics?.includes('diamond_pawn') ? 'diamond_pawn' : 'default'} />
       </motion.div>
     </motion.div>
   );

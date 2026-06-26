@@ -11,6 +11,8 @@ export default function RazorpayCheckout({
   onFailure,
   buttonText = "Pay Now",
   buttonClassName = "",
+  userId,
+  itemId,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +21,7 @@ export default function RazorpayCheckout({
 
     try {
       // 1. Create order on the backend
-      const orderRes = await fetch("http://localhost:3000/api/v1/payments/create-order", {
+      const orderRes = await fetch("http://localhost:5000/api/v1/payments/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,6 +30,8 @@ export default function RazorpayCheckout({
           amount,
           currency,
           receipt,
+          userId,
+          itemId
         }),
       });
 
@@ -51,7 +55,7 @@ export default function RazorpayCheckout({
         handler: async function (response) {
           // 3. Verify Payment on Backend
           try {
-            const verifyRes = await fetch("http://localhost:3000/api/v1/payments/verify-payment", {
+            const verifyRes = await fetch("http://localhost:5000/api/v1/payments/verify-payment", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

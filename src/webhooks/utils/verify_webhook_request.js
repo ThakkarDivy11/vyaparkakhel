@@ -19,7 +19,8 @@ exports.verifyWebhook = (req) => {
 
   // Get headers and body
   const { headers } = req;
-  const payload = req.body;
+  // Get the payload
+  const payload = req.rawBody || JSON.stringify(req.body);
 
   // Get Svix headers for verification
   const svixId = headers["svix-id"];

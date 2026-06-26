@@ -54,7 +54,7 @@ exports.createGame = catchAsync(async (req, res, next) => {
       providerId: user.providerId,
       seat: index,
       displayName: name,
-      balance: 1500,
+      balance: 1500, cosmetics: user?.wallet?.cosmetics || [],
       isReady: true,
     }));
   } else if (settings.mode === 'vs_computer') {
@@ -65,7 +65,7 @@ exports.createGame = catchAsync(async (req, res, next) => {
       providerId: index === 0 ? user.providerId : null,
       seat: index,
       displayName: name,
-      balance: 1500,
+      balance: 1500, cosmetics: user?.wallet?.cosmetics || [],
       isReady: true,
       isBot: index > 0,
     }));
@@ -75,7 +75,7 @@ exports.createGame = catchAsync(async (req, res, next) => {
       providerId: user.providerId,
       seat: 0,
       displayName: user.displayName || user.username,
-      balance: 1500,
+      balance: 1500, cosmetics: user?.wallet?.cosmetics || [],
       isReady: true,
     }];
   }
@@ -169,7 +169,7 @@ exports.joinGame = catchAsync(async (req, res, next) => {
       providerId: user.providerId,
       seat,
       displayName,
-      balance: 1500,
+      balance: 1500, cosmetics: user?.wallet?.cosmetics || [],
       isReady: true, // Auto-ready: joining a private room implies you're ready
     });
 

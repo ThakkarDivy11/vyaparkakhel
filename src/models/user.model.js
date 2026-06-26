@@ -92,6 +92,13 @@ const UserSchema = new Schema(
 
     location: { type: LocationSchema },
 
+    // wallet & inventory
+    wallet: {
+      tokens: { type: Number, default: 0 },
+      vipPass: { type: Boolean, default: false },
+      cosmetics: { type: [String], default: [] },
+    },
+
     // preferences & entitlements (minimal here; full entitlements in future)
     preferences: {
       defaultTokenSku: { type: String, trim: true, maxlength: 100 },

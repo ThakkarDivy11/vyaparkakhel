@@ -37,7 +37,11 @@ function applyMove(state, action) {
 
 function validateTurn(state, action) {
   // TIMEOUT and AUCTION actions can come from server (no seat check)
-  if (['TIMEOUT', 'AUCTION_BID', 'AUCTION_PASS'].includes(action.type)) return;
+  if (['AUCTION_BID', 'AUCTION_PASS'].includes(action.type)) return;
+  if (action.type === 'TIMEOUT') {
+    if (action.seat !== state.currentTurnSeat) throw new Error('stale_timeout');
+    return;
+  }
   // ACCEPT/REJECT trade: trade target, not current player
   if (['ACCEPT_TRADE', 'REJECT_TRADE'].includes(action.type)) {
     if (state.pendingTrade?.targetSeat !== action.seat) throw new Error('not_your_trade');

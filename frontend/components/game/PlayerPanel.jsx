@@ -119,7 +119,7 @@ export default function PlayerPanel({ player, isCurrentTurn, properties }) {
 
           {/* Small pawn token next to avatar */}
           <div className="shrink-0 w-7 h-7 flex items-center justify-center">
-            <PawnIcon color={tokenColor} className="w-7 h-7 drop-shadow-sm" />
+            <PawnIcon color={tokenColor} className="w-7 h-7 drop-shadow-sm" theme={player.cosmetics?.includes('diamond_pawn') ? 'diamond_pawn' : 'default'} />
           </div>
 
           {/* Name + balance */}

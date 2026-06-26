@@ -16,6 +16,7 @@ const PlayerInGameSchema = new Schema(
     properties: [{ type: String }], // property IDs or names (denormalize as needed)
     isReady: { type: Boolean, default: false }, // used in lobby
     isBot: { type: Boolean, default: false },
+    cosmetics: [{ type: String }],
   },
   { _id: false }
 );

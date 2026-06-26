@@ -19,7 +19,7 @@ const getRazorpayInstance = () => {
  */
 exports.createOrder = async (req, res, next) => {
   try {
-    const { amount, currency = "INR", receipt } = req.body;
+    const { amount, currency = "INR", receipt, userId, itemId } = req.body;
 
     if (!amount) {
       return next(new AppError("Amount is required", 400));
@@ -31,6 +31,10 @@ exports.createOrder = async (req, res, next) => {
       amount: amount * 100, // amount in the smallest currency unit (e.g., paise for INR)
       currency,
       receipt: receipt || `receipt_${Date.now()}`,
+      notes: {
+        userId: userId || "anonymous",
+        itemId: itemId || "unknown"
+      }
     };
 
     const order = await instance.orders.create(options);
@@ -75,11 +79,33 @@ exports.verifyPayment = async (req, res, next) => {
 
     if (isAuthentic) {
       // Payment is successful
-      // You can save the transaction to the database here
+      const instance = getRazorpayInstance();
+      const order = await instance.orders.fetch(razorpay_order_id);
+      
+      if (order && order.notes && order.notes.userId) {
+        const User = require("../models/user.model");
+        const user = await User.findOne({ providerId: order.notes.userId });
+        
+        if (user) {
+          const itemId = order.notes.itemId;
+          
+          if (itemId === "prod_tokens_100") {
+            user.wallet.tokens += 100;
+          } else if (itemId === "prod_vip_pass") {
+            user.wallet.vipPass = true;
+            user.wallet.vipExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+          } else if (itemId === "prod_dice_gold") {
+            if (!user.wallet.cosmetics.includes("golden_dice")) {
+              user.wallet.cosmetics.push("golden_dice");
+            }
+          }
+          await user.save();
+        }
+      }
       
       res.status(200).json({
         status: "success",
-        message: "Payment verified successfully",
+        message: "Payment verified and items credited successfully",
         data: {
           razorpay_payment_id,
           razorpay_order_id,

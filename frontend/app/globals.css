@@ -1983,13 +1983,13 @@
     height: 18px !important;
   }
   
-  /* Reorder tabs on phone: Home, Leaderboard, Achievements, History, Profile */
+  /* Reorder tabs on phone: Home, Store, Leaderboard, Achievements, History, Profile */
   .dash-nav button:nth-child(1) { order: 1 !important; } /* Home */
-  .dash-nav button:nth-child(4) { order: 2 !important; } /* Leaderboard */
-  .dash-nav button:nth-child(5) { order: 3 !important; } /* Achievements */
-  .dash-nav button:nth-child(6) { order: 4 !important; } /* History */
-  .dash-nav button:nth-child(2) { order: 5 !important; } /* Profile */
-  .dash-nav button:nth-child(3) { display: none !important; } /* Hide Store on phone */
+  .dash-nav button:nth-child(3) { order: 2 !important; display: flex !important; } /* Store */
+  .dash-nav button:nth-child(4) { order: 3 !important; } /* Leaderboard */
+  .dash-nav button:nth-child(5) { order: 4 !important; } /* Achievements */
+  .dash-nav button:nth-child(6) { order: 5 !important; } /* History */
+  .dash-nav button:nth-child(2) { order: 6 !important; } /* Profile */
 
   /* Center Content - Lock height and center vertically */
   .dash-center-content {
